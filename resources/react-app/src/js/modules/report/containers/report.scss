@@ -1,0 +1,101 @@
+#reportWrap {
+    padding: 4px 4px 0 4px;
+    min-width: 1100px;
+
+    > div {
+        padding: 10px;
+        display: flex;
+        flex-flow: row wrap;
+    }
+
+    > div.serch-flex {
+        justify-content: flex-start;
+
+        > div {
+            margin-right: 10px;
+
+            > div {
+                float: left;
+                width: 160px;
+            }
+
+            > p {
+                display: inline-block;
+                float: left;
+                margin: 0 10px 0 0;
+                width: 50px;
+                line-height: 30px;
+                text-align: right;
+            }
+
+            &:after {
+                content: "";
+                display: block;
+                clear: both;
+            }
+        }
+    }
+
+    > div.process-flex {
+        margin-top: 20px;
+        min-height: 130px;
+        justify-content: center;
+
+        > div {
+            margin: 3px;
+            flex-shrink: 1;
+            flex-basis: 170px;
+            border-radius: 0px;
+
+            > p {
+                height: 26px;
+                line-height: 26px;
+                text-align: center;
+            }
+
+            > div {
+                margin: 10px 0;
+                padding: 5px;
+                background-color: #4A4A4A;
+                border-radius: 4px;
+                transition: all 0.2s ease;
+                cursor: pointer;
+
+                &.disable {
+                    background-color: #9B9B9B;
+                    cursor: not-allowed;
+                    pointer-events: none;
+
+                    &:hover {
+                        box-shadow: none;
+                    }
+                }
+
+                &:hover {
+                    box-shadow: 0 0 5px #111;
+                }
+
+                &:active {
+                    box-shadow: none;
+                }
+
+                > p {
+                    margin: 6px;
+                    line-height: 24px;
+                    text-align: center;
+                    color: #FFF;
+
+                    &:nth-child(2) {
+                        font-size: 20px;
+                        margin-top: 0;
+                    }
+
+                    > span {
+                        margin-left: 5px;
+                        font-size: 14px;
+                    }
+                }
+            }
+        }
+    }
+}
