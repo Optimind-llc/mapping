@@ -1,15 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+// Config
+import { PASS_WORD } from '../../config/env';
 // Actions
 import { applicationActions } from '../reducers/application';
 import { push } from 'react-router-redux';
-// Material-ui Components
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { Paper, IconButton, IconMenu, MenuItem } from 'material-ui';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
-import SocialPublic from 'material-ui/svg-icons/social/public';
 // Components
 import Alert from '../components/alert/alert';
 import Navigation from '../components/navigation/navigation';
@@ -18,44 +14,41 @@ class App extends Component {
   constructor(props, context) {
     super(props, context);
 
-    if (props.routes[1].name == '950A') {
-      props.actions.changeVehicle('950A');
-    }
+    props.actions.changeProcess('press');
   }
 
   render() {
     const { children, routes, Application, alerts, actions } = this.props;
 
     const links = {
-      '680A': [
-        { en: 'dashboard', name: 'マッピング', disable: false},
-        { en: 'reference', name: '検査結果検索', disable: false },
-        { en: 'report', name: '直レポート印刷', disable: false },
-        { en: 'association', name: 'パネルID検索', disable: false }
+      'press': [
+        { path: '/press/manager/dashboard', name: 'ダッシュボード', disable: false},
+        { path: '/press/manager/mapping', name: 'マッピング', disable: false},
+        { path: '/press/manager/reference', name: '検査結果検索', disable: false },
+        { path: '/press/manager/report', name: '直レポート印刷', disable: false },
+        { path: '/press/manager/contact', name: '手直連絡票検索', disable: false }
       ],
-      '950A': [
-        { en: '950A/dashboard', name: 'ダッシュボード', disable: false},
-        { en: '950A/mapping', name: 'マッピング', disable: false},
-        { en: '950A/reference', name: '検査結果検索', disable: false },
-        { en: '950A/report', name: '直レポート印刷', disable: false },
-        { en: '950A/association', name: 'パネルID検索', disable: false }
+      'body': [
+        { path: '/body/manager/dashboard', name: 'ダッシュボード', disable: true},
+        { path: '/body/manager/mapping', name: 'マッピング', disable: true},
+        { path: '/body/manager/reference', name: '検査結果検索', disable: true },
+        { path: '/body/manager/report', name: '直レポート印刷', disable: true },
+        { path: '/body/manager/contact', name: '手直連絡票検索', disable: true }
       ]
     };
 
     const masterlinks = {
-      '680A': [
-        { en: 'inspector', name: '担当者マスタメンテ', disable: false },
-        { en: 'failure', name: '不良区分マスタメンテ', disable: false },
-        { en: 'modification', name: '手直区分マスタメンテ', disable: false },
-        { en: 'hole', name: '穴あけポイントメンテ', disable: false }
+      'press': [
+        { path: '/press/maintenance/worker', name: '担当者マスタ', disable: false },
+        { path: '/press/maintenance/failure', name: '不良区分マスタ', disable: false },
+        { path: '/press/maintenance/part', name: '品番マスタ', disable: false },
+        { path: '/press/maintenance/part', name: '部品ペアマスタ', disable: false }
       ],
-      '950A': [
-        { en: '950A/maintenance/worker', name: '担当者マスタ', disable: false },
-        { en: '950A/maintenance/failure', name: '不良区分マスタ', disable: false },
-        { en: '950A/maintenance/modification', name: '手直区分マスタ', disable: false },
-        { en: '950A/maintenance/holeModification', name: '穴手直区分マスタ', disable: false },
-        { en: '950A/maintenance/hole', name: '穴あけポイント', disable: false },
-        { en: '950A/maintenance/inline', name: '精度ポイント', disable: false }
+      'body': [
+        { path: '/body/maintenance/worker', name: '担当者マスタ', disable: true },
+        { path: '/body/maintenance/failure', name: '不良区分マスタ', disable: true },
+        { path: '/body/maintenance/part', name: '品番マスタ', disable: true },
+        { path: '/press/maintenance/part', name: '部品ペアマスタ', disable: true }
       ]
     };
 
@@ -75,14 +68,14 @@ class App extends Component {
       <div style={styles.container}>
         <Alert alerts={alerts} deleteSideAlerts={actions.deleteSideAlerts} />
         <Navigation
-          vehicle={Application.vehicle}
-          links={links[Application.vehicle]}
-          masterlinks={masterlinks[Application.vehicle]}
+          processEn={Application.process}
+          links={links[Application.process]}
+          masterlinks={masterlinks[Application.process]}
           logedin={Application.master}
-          pw={'0000'}
+          pw={PASS_WORD}
           login={() => actions.login()}
           logout={() => actions.logout()}
-          changeVehicle={(v) => this.props.actions.changeVehicle(v)}
+          changeProcess={p => this.props.actions.changeProcess(p)}
           push={actions.push}
         />
         <div style={styles.content}>

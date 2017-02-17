@@ -2,11 +2,11 @@ import {fromJS, Map as iMap, List as iList} from 'immutable';
 
 export const LOG_IN = 'LOG_IN';
 export const LOG_OUT = 'LOG_OUT';
-export const CHANGE_VEHICLE = 'CHANGE_VEHICLE';
+export const CHANGE_PROCESS = 'CHANGE_PROCESS';
 
 const initialState = {
   master: false,
-  vehicle: '680A'
+  process: 'press'
 };
 
 export default function reducer(state = initialState, action) {
@@ -21,9 +21,9 @@ export default function reducer(state = initialState, action) {
         master: false
       });
 
-    case CHANGE_VEHICLE:
+    case CHANGE_PROCESS:
       return Object.assign({}, state, {
-        vehicle: action.payload.vehicle
+        process: action.payload.process
       });
 
     default:
@@ -43,15 +43,15 @@ export function logout() {
   };
 }
 
-export function changeVehicle(vehicle) {
+export function changeProcess(p) {
   return {
-    type: CHANGE_VEHICLE,
-    payload: { vehicle }
+    type: CHANGE_PROCESS,
+    payload: { process: p }
   };
 }
 
 export const applicationActions = {
   login,
   logout,
-  changeVehicle
+  changeProcess
 };

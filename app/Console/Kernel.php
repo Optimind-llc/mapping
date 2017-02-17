@@ -13,12 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        'App\Console\Commands\InsertInline',
-        'App\Console\Commands\UpdateInline',
-        'App\Console\Commands\InsertDummyData',
-        'App\Console\Commands\Insert950ADummyData',
         'App\Console\Commands\ExportCSV',
-        'App\Console\Commands\PrintPDF'
+        // 'App\Console\Commands\Insert950ADummyData',
     ];
 
     /**
