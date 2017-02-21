@@ -86,7 +86,7 @@ class InspectionResultRepository
             ->withFailures()
             ->where('QRcode', '=', $QRcode)
             ->select([
-                'id as inspectionId',
+                'id',
                 'figure_id',
                 'line_code as line',
                 'vehicle_code as vehicle',
@@ -97,7 +97,8 @@ class InspectionResultRepository
                 'inspected_by as worker',
                 'palet_num as paletNum',
                 'palet_max as paletMax',
-                'f_comment as comment',
+                'f_comment as commentInF',
+                'm_comment as commentInM',
                 'processed_at as processedAt',
                 'inspected_at as inspectedAt',
                 'modificated_at as modificatedAt',
@@ -128,6 +129,7 @@ class InspectionResultRepository
         $new->processed_at = $param['processed_at'];
         $new->inspected_at = $this->now;
         $new->control_num = $param['control_num'];
+        $new->inspected_iPad_id = $param['inspected_iPad_id'];
         $new->created_at = $this->now;
         $new->updated_at = $this->now;
         $new->save();
@@ -149,7 +151,7 @@ class InspectionResultRepository
             ->where('discarded', '=', 0)
             ->where('f_keep', '=', 0)
             ->select([
-                'id as inspectionId',
+                'id',
                 'figure_id',
                 'line_code as line',
                 'vehicle_code as vehicle',
@@ -183,6 +185,7 @@ class InspectionResultRepository
         $ir->modificated_choku = $param['modificated_choku'];
         $ir->modificated_by = $param['modificated_by'];
         $ir->m_comment = $param['m_comment'];
+        $ir->modificated_iPad_id = $param['modificated_iPad_id'];
         $ir->modificated_at = $this->now;
         $ir->updated_at = $this->now;
         $ir->save();
@@ -210,7 +213,9 @@ class InspectionResultRepository
         $ir->ft_ids = serialize($ft_ids);
         $ir->updated_choku = $param['updated_choku'];
         $ir->updated_by = $param['updated_by'];
+        $ir->f_comment = $param['f_comment'];
         $ir->m_comment = $param['m_comment'];
+        $ir->updated_iPad_id = $param['updated_iPad_id'];
         $ir->updated_at = $this->now;
         $ir->save();
 
@@ -231,6 +236,45 @@ class InspectionResultRepository
 
         return $ir;
     }
+
+    public function getHistory($orderBy, $skip, $take)
+    {
+        $ir = InspectionResult::withFigure()
+            ->withFailures()
+            // ->whereNotNull('control_num')
+            ->whereNotNull('modificated_at')
+            // ->where('discarded', '=', 0)
+            // ->where('f_keep', '=', 0)
+            ->select([
+                'id',
+                'figure_id',
+                'line_code as line',
+                'vehicle_code as vehicle',
+                'pt_pn as part',
+                // 'f_keep as keep',
+                // 'discarded',
+                'inspected_choku as choku',
+                'inspected_by as worker',
+                'palet_num as paletNum',
+                'palet_max as paletMax',
+                'm_comment as comment',
+                'processed_at as processedAt',
+                'inspected_at as inspectedAt',
+                'modificated_at as modificatedAt',
+                'control_num as controlNum'
+            ])
+            ->orderBy($orderBy, 'desc')
+            ->skip($skip)
+            ->take($take)
+            ->get();
+
+        return $ir;
+    }
+
+
+
+
+
 
     public function findByCN($controlNum)
     {

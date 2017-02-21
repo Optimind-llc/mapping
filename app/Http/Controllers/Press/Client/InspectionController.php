@@ -15,6 +15,8 @@ use App\Repositories\FigureRepository;
 use App\Repositories\InspectionResultRepository;
 use App\Repositories\LineRepository;
 use App\Repositories\CombinationRepository;
+//Services
+use App\Services\TpsConnect;
 // Exceptions
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -111,7 +113,6 @@ class InspectionController extends Controller
                 'status' => $controlStatus
             ];
             $irArray['figure'] = config('app.url').$figure['path'];
-
         }
         else {
             $line_code = $this->line->getCodeByCodeInQR(substr($QRcode, 19, 3));
@@ -138,6 +139,7 @@ class InspectionController extends Controller
     public function saveForFailure(Request $request)
     {
         $QRcode = $request->QRcode;
+        $iPadId = $request->iPadId;
 
         $line_code = $this->line->getCodeByCodeInQR(substr($QRcode, 19, 3));
         $pt_pn = substr($QRcode, 26, 10);
@@ -148,7 +150,7 @@ class InspectionController extends Controller
 
         DB::connection('press')->beginTransaction();
         $param = [
-            'QRcode' => $request->QRcode,
+            'QRcode' => $QRcode,
             'line_code' => $line_code,
             'vehicle_code' => $vehicle_code,
             'pt_pn' => $pt_pn,
@@ -163,7 +165,8 @@ class InspectionController extends Controller
             'f_comment' => $request->comment,
             'ft_ids' => $this->failureType->activeIds(),
             'processed_at' => $processed_at,
-            'control_num' => $request->controlNum
+            'control_num' => $request->controlNum,
+            'inspected_iPad_id' => $iPadId
         ];
 
         $fs = [];
@@ -179,7 +182,7 @@ class InspectionController extends Controller
         } else {
             DB::connection('press')->rollBack();
             return \Response::json([
-                'message' => 'Some parts already be inspected',
+                'message' => 'Save inspection failed',
             ], 400);
         }
     }
@@ -203,6 +206,7 @@ class InspectionController extends Controller
             'modificated_choku' => $request->choku,
             'modificated_by' => $request->worker,
             'm_comment' => $request->comment,
+            'modificated_iPad_id' => $request->iPadId,
             'ft_ids' => $this->failureType->activeIds()
         ];
 
@@ -220,14 +224,29 @@ class InspectionController extends Controller
         if ($this->inspectionResult->updateByModification($request->inspectionId, $param, $fs, $mfs)) {
             DB::connection('press')->commit();
             return [
-                'message' => 'Save inspection succeeded'
+                'message' => 'Save modification succeeded'
             ];
         } else {
             DB::connection('press')->rollBack();
             return \Response::json([
-                'message' => 'Some parts already be inspected',
+                'message' => 'Save modification failed',
             ], 400);
         }
+    }
+
+    public function modificationHistory(Request $request)
+    {
+        $orderBy = 'modificated_at';
+        $skip = $request->skip;
+        $take = $request->take;
+
+        $irs = $this->inspectionResult->getHistory($orderBy, $skip, $take)->map(function($ir) {
+            $irArray = $ir->toArray();
+            $irArray['figure'] = config('app.url').$ir->figure->path;
+            return $irArray;
+        });
+
+        return $irs;
     }
 
     public function update(Request $request)
@@ -237,7 +256,9 @@ class InspectionController extends Controller
             'discarded' => $request->discarded,
             'updated_choku' => $request->choku,
             'updated_by' => $request->worker,
-            'm_comment' => $request->comment,
+            'f_comment' => $request->commentInF,
+            'm_comment' => $request->commentInM,
+            'updated_iPad_id' => $request->iPadId,
             'ft_ids' => $this->failureType->activeIds()
         ];
 
@@ -270,6 +291,30 @@ class InspectionController extends Controller
         }
     }
 
+
+
+
+
+
+
+
+
+    public function test(Request $request)
+    {
+        $iPadId = $request->iPadId;
+        $QRcode = $request->QRcode;
+
+        $socket = new TpsConnect;
+        return $socket->setPostData($QRcode, $iPadId);
+    }
+
+
+
+
+
+
+
+
     public function delete(Request $request)
     {
         $process = $request->process;
@@ -284,10 +329,6 @@ class InspectionController extends Controller
             'message' => 'Delete inspection succeeded'
         ];
     }
-
-
-
-
 
     public function getFigure($pn, Request $request)
     {

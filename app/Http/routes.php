@@ -10,12 +10,18 @@ Route::group(['prefix' => 'press', 'namespace' => 'Press'], function () {
         Route::group(['prefix' => 'inspection'], function () {
             Route::get('initial', 'InspectionController@initial');
             Route::get('controlNum', 'InspectionController@getControlNum');
-
             Route::post('check', 'InspectionController@check');
             Route::post('save/failure', 'InspectionController@saveForFailure');
+
             Route::get('toBeModificated', 'InspectionController@toBeModificated');
             Route::post('save/modification', 'InspectionController@saveForModification');
+            Route::post('history/modification', 'InspectionController@modificationHistory');
+
+
+
             Route::post('update', 'InspectionController@update');
+
+            Route::post('test', 'InspectionController@test');
 
 
             // Route::get('figure/{pn}', 'InspectionController@getFigure');

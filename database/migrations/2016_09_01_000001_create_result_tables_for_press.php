@@ -40,6 +40,12 @@ class CreateResultTablesForPress extends Migration
             $table->timestamp('exported_at')->nullable();
             $table->tinyInteger('latest')->unsigned()->default(1);
             $table->integer('control_num')->nullable();
+
+            $table->string('inspected_iPad_id', 255);
+            $table->string('modificated_iPad_id', 255)->nullable();
+            $table->string('updated_iPad_id', 255)->nullable();
+            $table->string('tpsResponce', 255)->nullable();
+            $table->tinyInteger('tpsResponceStatus')->nullable();
             $table->timestamps();
 
             /*
@@ -197,6 +203,8 @@ class CreateResultTablesForPress extends Migration
      */
     public function down()
     {
+        Schema::connection('press')->drop('memoFailures');
+        Schema::connection('press')->drop('memos');
         Schema::connection('press')->drop('failures');
         Schema::connection('press')->drop('inspection_results');
     }

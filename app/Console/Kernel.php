@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         'App\Console\Commands\ExportCSV',
+        'App\Console\Commands\SaveTpsResponce',
         // 'App\Console\Commands\Insert950ADummyData',
     ];
 
