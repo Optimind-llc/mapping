@@ -80,12 +80,6 @@ input {
   pointer-events : none;
 }
 
-p, h1, h2, h3, h4, h5, span {
-  &.molding {color: #4B94C0; }
-  &.holing { color: #CF4635; }
-  &.jointing { color: #00A459; }
-}
-
 button.iconBtn {
   box-sizing: border-box;
   padding: 0 10px;
@@ -99,6 +93,7 @@ button.iconBtn {
   &.dark {
     color: #FFF;
     background-color: #4A4A4A;
+    border: 1px solid #4A4A4A;
 
     &:hover {
       box-shadow: 0 0 5px #4A4A4A;
@@ -127,87 +122,3 @@ div.divider {
   height: 1px;
   background: #E7ECF5;
 }
-
-  // &.gray {
-  //   background-color: #BFBFBF;
-  //   color: #000;
-  //   &:hover {
-  //     box-shadow: 0 0 5px #4A4A4A;
-  //   }
-  //   &:active {
-  //     box-shadow: none;
-  //   }
-
-  //   &.disabled {
-  //     background-color: #EEE;
-  //     color: #BFBFBF;
-  //     cursor: default;
-
-  //     &:hover, :active {
-  //       box-shadow: none;
-  //     }
-  //   }
-  // }
-
-  // &.selectable-dark {
-  //   background-color: #EEE;
-  //   color: #9F9F9F;
-
-  //   &.selected {
-  //     background-color: #4A4A4A;
-  //     color: #FFF;
-  //   } 
-  // }
-
-  // &.download {
-  //   height: 24px;
-
-  //   p {
-  //     margin: 0;
-  //     font-size: 11px;
-  //     line-height: 24px;
-
-  //     &:before {
-  //       content: url(/img/icon/download.svg);
-  //       display: inline-block;
-  //       margin-right: 2px;
-  //       height: auto;
-  //       width: 12px;
-  //       position: relative;
-  //       top: 2px;
-  //       left: -2px;
-  //     }
-  //   }
-  // }
-
-  // &.serch {
-  //   p {
-  //     margin: 0;
-
-  //     &:before {
-  //       content: url(/img/icon/serch-w.svg);
-  //       display: block;
-  //       float: left;
-  //       margin-right: 2px;
-  //       height: auto;
-  //       width: 12px;
-  //       position: relative;
-  //       top: 1px;
-  //       left: -2px;
-  //     }
-  //   }
-
-  //   &.disabled p:before {
-  //     content: url(/img/icon/serch-g.svg);
-  //   }
-  // }
-
-  // &.edit {
-  //   height: 24px;
-
-  //   p {
-  //     font-size: 11px;
-  //     line-height: 24px;
-  //   }
-  // }
-

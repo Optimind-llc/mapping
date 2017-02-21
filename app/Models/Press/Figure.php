@@ -16,18 +16,9 @@ class Figure extends Model
     public function partType()
     {
         return $this->belongsTo(
-            'App\Models\Vehicle950A\PartType',
+            'App\Models\Press\PartType',
             'pt_pn',
             'pn'
-        );
-    }
-
-    public function holeTypes()
-    {
-        return $this->hasMany(
-            'App\Models\Vehicle950A\HoleType',
-            'figure_id',
-            'id'
         );
     }
 }

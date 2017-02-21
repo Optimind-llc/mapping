@@ -19,7 +19,7 @@ class PagesController extends Controller
     public function index()
     {
         $hotReload = env('HOT_RELOAD');
-        $domain = env('APP_URL');
+        $domain = config('app.url');
 
         return view('manager.index', compact('hotReload', 'domain'));
     }

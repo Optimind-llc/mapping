@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import Select from 'react-select';
 import { vehicles, processes, inspections, inspectionGroups } from '../../../../utils/Processes';
 // Actions
 import { push } from 'react-router-redux';
@@ -12,23 +11,24 @@ import './report.scss';
 // Components
 // import Loading from '../../../components/loading/loading';
 // import RangeCalendar from '../components/rangeCalendar/rangeCalendar';
-// import Mapping from '../../mapping/containers/mapping';
+import ReportHead from '../components/head/reportHead';
+import ReportBody from '../components/body/reportBody';
 
 class Report extends Component {
   constructor(props, context) {
     super(props, context);
 
     const { getReportData } = props.actions;
-    const now = moment();
-    getReportData(now.format("YYYY-MM-DD"));
+    const date = moment();
+    const choku = {label: '白直', value: ['W']};
+
+    getReportData(date.format('YYYY-MM-DD'), choku.value);
 
     this.state = ({
+      date,
+      choku,
       modal: false,
       path: '',
-      vehicle: null,
-      date: now,
-      inspectorG: null,
-      process: null,
     });
   }
 
@@ -36,25 +36,53 @@ class Report extends Component {
     this.props.actions.clearReportData();
   }
 
+  serchReport(date, choku) {
+    const { getReportData } = this.props.actions;
+
+    getReportData(date.format('YYYY-MM-DD'), choku.value);
+  }
+
   render() {
-    const { date } = this.state;
-    const { reportData, actions } = this.props;
+    const { date, choku } = this.state;
+    const { InitialData, ReportData, actions } = this.props;
 
     return (
-      <div id="950Report">
-        <p>Comming soon...</p>
+      <div id="press-report">
+        <ReportHead
+          defaultDate={date}
+          changeDate={d => {
+            this.setState({date: d});
+            this.serchReport(d, choku);
+          }}
+          defaultChoku={choku}
+          changeChoku={c => {
+            this.setState({choku: c});
+            this.serchReport(date, c);
+          }}
+        />
+        {
+          !InitialData.idFetching && !ReportData.idFetching && ReportData.data !== null &&
+          <ReportBody
+            lines={InitialData.lines}
+            vehicles={InitialData.vehicles}
+            combinations={InitialData.combinations}
+            count={ReportData.data}
+          />
+        }
       </div>
     );
   }
 }
 
 Report.propTypes = {
-  reportData: PropTypes.object.isRequired
+  InitialData: PropTypes.object.isRequired,
+  ReportData: PropTypes.object.isRequired
 };
 
 function mapStateToProps(state, ownProps) {
   return {
-    reportData: state.ReportData950A
+    InitialData: state.Application.press,
+    ReportData: state.PressReportData
   };
 }
 

@@ -8,6 +8,7 @@ import { Provider, connect } from 'react-redux';
 import App from './App';
 import PressDashboard from '../modules/Press/dashboard/containers/dashboard';
 import PressReport from '../modules/Press/report/containers/report';
+import ASS from '../modules/Press/reference/containers/reference';
 
 class Root extends Component {
   render() {
@@ -17,7 +18,7 @@ class Root extends Component {
         <Router history={history}>
           <Route name="press" path="press" component={App}>
             <Route path="manager">
-              <Route name="ダッシュボード" path="dashboard" component={PressDashboard}/>
+              <Route name="ダッシュボード" path="dashboard" component={ASS}/>
               <Route name="マッピング" path="mapping" component={PressDashboard}/>
               <Route name="検査結果検索" path="reference" component={PressDashboard}/>
               <Route name="直レポート" path="report" component={PressReport}/>

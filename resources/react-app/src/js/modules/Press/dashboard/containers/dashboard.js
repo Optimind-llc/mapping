@@ -11,6 +11,7 @@ import { pageActions } from '../ducks/mapping';
 import './dashboard.scss';
 // Components
 import SearchButton from '../../../../components/buttons/search/searchButton';
+import SaveButton from '../../../../components/buttons/save/saveButton';
 // import Loading from '../../../components/loading/loading';
 // import RangeCalendar from '../components/rangeCalendar/rangeCalendar';
 // import Mapping from '../../mapping/containers/mapping';
@@ -46,10 +47,17 @@ class Dashboard extends Component {
     return (
       <div id="950Dashboard">
         <p>Comming soon...</p>
-        <SearchButton active={false} searching={false}/>
-        <SearchButton active={false} searching={true}/>
-        <SearchButton active={true} searching={false}/>
-        <SearchButton active={true} searching={true}/>
+        <div>
+          <SearchButton active={false} searching={false}/>
+          <SearchButton active={false} searching={true}/>
+          <SearchButton active={true} searching={false}/>
+          <SearchButton active={true} searching={true}/>
+        </div>
+        <div>
+          <SaveButton active={false} saving={false}/>
+          <SaveButton active={true} saving={true}/>
+          <SaveButton active={true} saving={false}/>
+        </div>
       </div>
     );
   }

@@ -66,21 +66,25 @@ class RelatedPartTableSeeder extends Seeder
         $data = [
             [
                 'code'       => 'ATR18',
+                'code_inQR'  => 'H6T',
                 'sort'       => 1,
                 'created_at' => $now,
                 'updated_at' => $now
             ],[
                 'code'       => '6A',
+                'code_inQR'  => 'E6T',
                 'sort'       => 2,
                 'created_at' => $now,
                 'updated_at' => $now
             ],[
                 'code'       => '22A',
+                'code_inQR'  => 'I2A',
                 'sort'       => 3,
                 'created_at' => $now,
                 'updated_at' => $now
             ],[
                 'code'       => '10B',
+                'code_inQR'  => 'E7T',
                 'sort'       => 4,
                 'created_at' => $now,
                 'updated_at' => $now
@@ -110,6 +114,34 @@ class RelatedPartTableSeeder extends Seeder
                 'sort'       => 2,
                 'created_at' => $now,
                 'updated_at' => $now
+            ],[
+                'pn'         => '1111111111',
+                'name'       => 'ダミー1',
+                'en'         => 'dummy1',
+                'sort'       => 3,
+                'created_at' => $now,
+                'updated_at' => $now
+            ],[
+                'pn'         => '2222222222',
+                'name'       => 'ダミー2',
+                'en'         => 'dummy2',
+                'sort'       => 4,
+                'created_at' => $now,
+                'updated_at' => $now
+            ],[
+                'pn'         => '3333333333',
+                'name'       => 'ダミー3',
+                'en'         => 'dummy3',
+                'sort'       => 5,
+                'created_at' => $now,
+                'updated_at' => $now
+            ],[
+                'pn'         => '4444444444',
+                'name'       => 'ダミー4',
+                'en'         => 'dummy4',
+                'sort'       => 6,
+                'created_at' => $now,
+                'updated_at' => $now
             ],
         ];
 
@@ -123,15 +155,63 @@ class RelatedPartTableSeeder extends Seeder
 
         $data = [
             [
-                'vehicle_code' => '132A',
                 'line_code'    => 'ATR18',
+                'vehicle_code' => '963A',
                 'pt_pn'        => '5381212B70',
                 'created_at'   => $now,
                 'updated_at'   => $now
             ],[
-                'vehicle_code' => '132A',
                 'line_code'    => 'ATR18',
+                'vehicle_code' => '963A',
                 'pt_pn'        => '5381112B70',
+                'created_at'   => $now,
+                'updated_at'   => $now
+            ],[
+                'line_code'    => 'ATR18',
+                'vehicle_code' => '520A',
+                'pt_pn'        => '1111111111',
+                'created_at'   => $now,
+                'updated_at'   => $now
+            ],[
+                'line_code'    => 'ATR18',
+                'vehicle_code' => '410A',
+                'pt_pn'        => '2222222222',
+                'created_at'   => $now,
+                'updated_at'   => $now
+            ],[
+                'line_code'    => 'ATR18',
+                'vehicle_code' => '030A',
+                'pt_pn'        => '3333333333',
+                'created_at'   => $now,
+                'updated_at'   => $now
+            ],[
+                'line_code'    => 'ATR18',
+                'vehicle_code' => '745L',
+                'pt_pn'        => '3333333333',
+                'created_at'   => $now,
+                'updated_at'   => $now
+            ],[
+                'line_code'    => 'ATR18',
+                'vehicle_code' => '660L',
+                'pt_pn'        => '4444444444',
+                'created_at'   => $now,
+                'updated_at'   => $now
+            ],[
+                'line_code'    => '6A',
+                'vehicle_code' => '660L',
+                'pt_pn'        => '4444444444',
+                'created_at'   => $now,
+                'updated_at'   => $now
+            ],[
+                'line_code'    => '22A',
+                'vehicle_code' => '660L',
+                'pt_pn'        => '4444444444',
+                'created_at'   => $now,
+                'updated_at'   => $now
+            ],[
+                'line_code'    => '10B',
+                'vehicle_code' => '660L',
+                'pt_pn'        => '4444444444',
                 'created_at'   => $now,
                 'updated_at'   => $now
             ],

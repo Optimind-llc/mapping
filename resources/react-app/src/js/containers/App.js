@@ -13,8 +13,10 @@ import Navigation from '../components/navigation/navigation';
 class App extends Component {
   constructor(props, context) {
     super(props, context);
+    const { changeProcess, getPressInitial } = this.props.actions;
 
-    props.actions.changeProcess('press');
+    changeProcess('press');
+    getPressInitial();
   }
 
   render() {

@@ -22,10 +22,10 @@ class Navigation extends Component {
   }
 
   logout() {
-    const { logout, push } = this.props;
+    const { processEn, logout, push } = this.props;
 
     logout();
-    push('/manager/dashboard');
+    push(`/${processEn}/manager/mapping`);
     this.setState({pw: '', error: false});
   }
 
@@ -33,8 +33,8 @@ class Navigation extends Component {
     const { processEn, links, masterlinks, logedin, changeProcess, push } = this.props;
     const { pw, error, opened } = this.state;
 
-    const actineProcess = PROCESSES.find(p => p.value === processEn);
-    const deactineProcesses = PROCESSES.filter(p => p.value !== processEn);
+    const activeProcess = PROCESSES.find(p => p.value === processEn);
+    const deactiveProcesses = PROCESSES.filter(p => p.value !== processEn);
 
     return (
       <div id="navigation">
@@ -46,17 +46,17 @@ class Navigation extends Component {
             className={`vehicle-displaying ${opened ? 'focused' : ''}`}
             onClick={() => this.setState({opened: !opened})}
           >
-            <p>{actineProcess.label}</p>
+            <p>{activeProcess.label}</p>
           </div>
           {
             opened &&
-            deactineProcesses.map(p =>
+            deactiveProcesses.map(p =>
               <div
                 className="vehicle-hiding"
                 onClick={() => {
                   this.setState({opened: !opened});
                   changeProcess(p.value);
-                  push(`${p.value}/manager/mapping`);
+                  push(`/${p.value}/manager/mapping`);
                 }}
               >
                 <p>{p.label}</p>

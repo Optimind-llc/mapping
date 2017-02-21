@@ -25,7 +25,7 @@ class SearchButton extends Component {
       <button
         className={`iconBtn search dark ${disabled ? 'disabled' : ''}`}
       >
-        <img src={`/img/icon/${disabled ? 'serch-g' : 'serch-w'}.svg`}/>
+        <img src={`/img/icon/${disabled ? 'search-g' : 'search-w'}.svg`}/>
         <p>{word}</p>
       </button>
     );

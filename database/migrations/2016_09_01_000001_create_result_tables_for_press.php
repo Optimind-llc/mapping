@@ -13,15 +13,21 @@ class CreateResultTablesForPress extends Migration
     {
         Schema::connection('press')->create('inspection_results', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('vehicle_code', 16);
+            $table->string('QRcode', 134)->unique();
             $table->string('line_code', 16);
+            $table->string('vehicle_code', 16);
             $table->string('pt_pn', 10);
             $table->integer('figure_id')->unsigned()->nullable();
             $table->tinyInteger('status')->unsigned()->default(1);
+            $table->tinyInteger('f_keep')->unsigned()->default(1);
+            $table->tinyInteger('m_keep')->unsigned()->default(1);
+
             $table->tinyInteger('discarded')->unsigned()->default(0);
-            $table->string('created_choku', 8);
+            $table->string('inspected_choku', 8);
+            $table->string('modificated_choku', 8)->nullable();
             $table->string('updated_choku', 8)->nullable();
-            $table->string('created_by', 8);
+            $table->string('inspected_by', 8);
+            $table->string('modificated_by', 8)->nullable();
             $table->string('updated_by', 8)->nullable();
             $table->integer('palet_num')->unsigned();
             $table->integer('palet_max')->unsigned();
@@ -33,21 +39,104 @@ class CreateResultTablesForPress extends Migration
             $table->timestamp('modificated_at')->nullable();
             $table->timestamp('exported_at')->nullable();
             $table->tinyInteger('latest')->unsigned()->default(1);
-            $table->integer('control_num')->unique()->nullable();
+            $table->integer('control_num')->nullable();
             $table->timestamps();
 
             /*
              * Add Foreign
              */
+            $table->foreign('line_code')
+                ->references('code')
+                ->on('lines')
+                ->onUpdate('cascade')
+                ->onDelete('restrict');
+
             $table->foreign('vehicle_code')
                 ->references('code')
                 ->on('vehicles')
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
 
+            $table->foreign('pt_pn')
+                ->references('pn')
+                ->on('part_types')
+                ->onUpdate('cascade')
+                ->onDelete('restrict');
+
+            $table->foreign('figure_id')
+                ->references('id')
+                ->on('figures')
+                ->onUpdate('cascade')
+                ->onDelete('set null');
+
+            /**
+             * Add Unique
+             */
+            $table->unique(['inspected_choku', 'control_num']);
+        });
+
+        Schema::connection('press')->create('failures', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('type_id')->unsigned();
+            $table->integer('ir_id')->unsigned();
+            $table->integer('figure_id')->unsigned()->nullable();
+            $table->integer('x1')->unsigned()->default(0);
+            $table->integer('y1')->unsigned()->default(0);
+            $table->integer('x2')->unsigned()->default(0);
+            $table->integer('y2')->unsigned()->default(0);
+            $table->integer('f_qty')->unsigned()->default(0);
+            $table->integer('m_qty')->unsigned()->nullable();
+            $table->tinyInteger('responsible_for')->unsigned()->nullable();
+            $table->timestamps();
+
+            /**
+             * Add Foreign
+             */
+            $table->foreign('type_id')
+                ->references('id')
+                ->on('failure_types')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+
+            $table->foreign('ir_id')
+                ->references('id')
+                ->on('inspection_results')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+
+            $table->foreign('figure_id')
+                ->references('id')
+                ->on('figures')
+                ->onUpdate('cascade')
+                ->onDelete('set null');
+        });
+
+        Schema::connection('press')->create('memos', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('line_code', 16);
+            $table->string('vehicle_code', 16);
+            $table->string('pt_pn', 10);
+            $table->integer('figure_id')->unsigned()->nullable();
+            $table->integer('capacity')->unsigned();
+            $table->string('created_choku', 8);
+            $table->string('updated_choku', 8)->nullable();
+            $table->string('created_by', 8);
+            $table->string('updated_by', 8)->nullable();
+            $table->timestamp('exported_at')->nullable();
+            $table->timestamps();
+
+            /*
+             * Add Foreign
+             */
             $table->foreign('line_code')
                 ->references('code')
                 ->on('lines')
+                ->onUpdate('cascade')
+                ->onDelete('restrict');
+
+            $table->foreign('vehicle_code')
+                ->references('code')
+                ->on('vehicles')
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
 
@@ -64,18 +153,18 @@ class CreateResultTablesForPress extends Migration
                 ->onDelete('set null');
         });
 
-        Schema::connection('press')->create('failures', function (Blueprint $table) {
+        Schema::connection('press')->create('memoFailures', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('type_id')->unsigned();
             $table->integer('ir_id')->unsigned();
             $table->integer('figure_id')->unsigned()->nullable();
-            $table->integer('x')->unsigned()->default(0);
-            $table->integer('y')->unsigned()->default(0);
-            $table->integer('sub_x')->unsigned()->default(0);
-            $table->integer('sub_y')->unsigned()->default(0);
-            $table->integer('f_qty')->unsigned()->default(0);
-            $table->integer('m_qty')->unsigned()->nullable();
-            $table->string('responsible_for', 1)->nullable();
+            $table->integer('x1')->unsigned()->default(0);
+            $table->integer('y1')->unsigned()->default(0);
+            $table->integer('x2')->unsigned()->default(0);
+            $table->integer('y2')->unsigned()->default(0);
+            $table->integer('palet_first')->unsigned()->default(0);
+            $table->integer('palet_last')->unsigned()->nullable();
+            $table->date('modificated_at');
             $table->timestamps();
 
             /**

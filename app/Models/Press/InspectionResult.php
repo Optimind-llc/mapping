@@ -15,74 +15,62 @@ class InspectionResult extends Model
     protected $guarded = ['id'];
     protected $dates = ['processed_at', 'inspected_at', 'modificated_at', 'exported_at'];
 
-    public function parts()
+    public function scopeNarrow($query, $start, $end, $by, $chokus)
     {
-        return $this->belongsTo(
-            'App\Models\Vehicle950A\Part',
-            'part_id',
-            'id'
-        );
+        return $query->where('discarded', '=', 0)
+            ->whereIn($by.'_choku', $chokus)
+            ->where($by.'_at', '>=', $start)
+            ->where($by.'_at', '<', $end)
+            ->orderBy($by.'_at', 'asc');
+    }
+
+    public function scopeWithFailures($query)
+    {
+        return $query->with([
+            'failures' => function($q) {
+                $q->select([
+                    'id',
+                    'ir_id',
+                    'type_id as typeId',
+                    'x1',
+                    'y1',
+                    'x2',
+                    'y2',
+                    'f_qty as fQty',
+                    'm_qty as mQty',
+                    'responsible_for as responsibleFor'
+                ]);
+            }
+        ]);
+    }
+
+    public function scopeWithFigure($query)
+    {
+        return $query->with([
+            'figure' => function($q) {
+                $q->where('status', '=', 1)->select([
+                    'id',
+                    'path'
+                ]);
+            }
+        ]);
     }
 
     public function failures()
     {
         return $this->hasMany(
-            'App\Models\Vehicle950A\Failure',
+            'App\Models\Press\Failure',
             'ir_id',
             'id'
         );
     }
 
-    public function modifications()
+    public function figure()
     {
-        return $this->hasMany(
-            'App\Models\Vehicle950A\Modification',
-            'ir_id',
+        return $this->belongsTo(
+            'App\Models\Press\Figure',
+            'figure_id',
             'id'
         );
     }
-
-    public function holes()
-    {
-        return $this->hasMany(
-            'App\Models\Vehicle950A\Hole',
-            'ir_id',
-            'id'
-        );
-    }
-
-    public function scopeIdentify($query, $p, $i, $partId)
-    {
-        return $query->where('process', '=', $p)
-            ->where('inspection', '=', $i)
-            ->where('part_id', '=', $partId)
-            ->where('latest', '=', 1);
-    }
-
-    // public function groups()
-    // {
-    //     return $this->belongsTo(
-    //         'App\Models\InspectionGroup',
-    //         'inspection_group_id',
-    //         'id'
-    //     );
-    // }
-
-    // public function pages()
-    // {
-    //     return $this->hasMany(
-    //         'App\Models\Client\Page',
-    //         'family_id',
-    //         'id'
-    //     );
-    // }
-
-    // public function photos()
-    // {
-    //     return $this->hasMany(
-    //         'App\Models\Hole',
-    //         'figure_id',
-    //         'id'
-    //     );
-    // }
 }

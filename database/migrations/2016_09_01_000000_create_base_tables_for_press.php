@@ -14,6 +14,7 @@ class CreateBaseTablesForPress extends Migration
         Schema::connection('press')->create('vehicles', function (Blueprint $table) {
             $table->string('code', 16);
             $table->integer('sort')->unsigned()->default(1);
+            $table->integer('status')->unsigned()->default(1);
             $table->timestamps();
 
             /**
@@ -24,7 +25,9 @@ class CreateBaseTablesForPress extends Migration
 
         Schema::connection('press')->create('lines', function (Blueprint $table) {
             $table->string('code', 16);
+            $table->string('code_inQR', 16)->unique();
             $table->integer('sort')->unsigned()->default(1);
+            $table->integer('status')->unsigned()->default(1);
             $table->timestamps();
 
             /**
@@ -64,23 +67,24 @@ class CreateBaseTablesForPress extends Migration
         });
 
         Schema::connection('press')->create('combinations', function (Blueprint $table) {
-            $table->string('vehicle_code', 16);
             $table->string('line_code', 16);
+            $table->string('vehicle_code', 16);
             $table->string('pt_pn', 10);
             $table->timestamps();
 
             /**
              * Add Foreign
              */
-            $table->foreign('vehicle_code')
-                ->references('code')
-                ->on('vehicles')
-                ->onUpdate('cascade')
-                ->onDelete('restrict');
 
             $table->foreign('line_code')
                 ->references('code')
                 ->on('lines')
+                ->onUpdate('cascade')
+                ->onDelete('restrict');
+
+            $table->foreign('vehicle_code')
+                ->references('code')
+                ->on('vehicles')
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
 
@@ -93,7 +97,7 @@ class CreateBaseTablesForPress extends Migration
             /**
              * Add Primary
              */
-            $table->primary(['vehicle_code', 'line_code', 'pt_pn']);
+            $table->primary(['line_code', 'vehicle_code', 'pt_pn']);
         });
 
 

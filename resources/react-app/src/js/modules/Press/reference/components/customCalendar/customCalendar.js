@@ -4,11 +4,11 @@ import moment from 'moment';
 import DatePicker from 'rc-calendar/lib/Picker';
 import jaJP from './ja_JP';
 import 'rc-calendar/assets/index.css';
-import './rangeCalendar.css';
+import './customCalendar.css';
 import TimePickerPanel from 'rc-time-picker/lib/Panel';
 import 'rc-time-picker/assets/index.css';
 
-class RangeCalendar extends Component {
+class CustomCalendar extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -115,11 +115,11 @@ class RangeCalendar extends Component {
   }
 };
 
-RangeCalendar.propTypes = {
+CustomCalendar.propTypes = {
   defaultValue: PropTypes.object,
   defaultCalendarValue: PropTypes.object,
   setState: PropTypes.func,
   disabled: PropTypes.bool
 };
 
-export default RangeCalendar;
+export default CustomCalendar;

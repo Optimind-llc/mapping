@@ -38,6 +38,7 @@ export function callApi(endpoint, method, body) {
         return Promise.reject(json);
       }
 
-      return camelizeKeys(json);
+      // return camelizeKeys(json);
+      return json;
     });
 }

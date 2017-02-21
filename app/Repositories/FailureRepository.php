@@ -15,11 +15,12 @@ class FailureRepository
         $new->type_id = $param['type_id'];
         $new->ir_id = $param['ir_id'];
         $new->figure_id = $param['figure_id'];
-        $new->x = $param['x'];
-        $new->y = $param['y'];
-        $new->sub_x = $param['sub_x'];
-        $new->sub_y = $param['sub_y'];
+        $new->x1 = $param['x1'];
+        $new->y1 = $param['y1'];
+        $new->x2 = $param['x2'];
+        $new->y2 = $param['y2'];
         $new->f_qty = $param['f_qty'];
+        $new->m_qty = $param['m_qty'];
         $new->responsible_for = $param['responsible_for'];
         $new->save();
 
