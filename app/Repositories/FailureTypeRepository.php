@@ -20,9 +20,4 @@ class FailureTypeRepository
     {
         return FailureType::onlyActive()->get()->toArray();
     }
-
-    // public function create($param)
-    // {
-
-    // }
 }

@@ -15,6 +15,24 @@ class PartType extends Model
     protected $guarded = ['pn'];
     public $incrementing = false;
 
+    public function leftPair()
+    {
+        return $this->hasOne(
+            'App\Models\Press\PartTypePair',
+            'left_pn',
+            'pn'
+        );
+    }
+
+    public function rightPair()
+    {
+        return $this->hasOne(
+            'App\Models\Press\PartTypePair',
+            'right_pn',
+            'pn'
+        );
+    }
+
     public function figures()
     {
         return $this->hasMany(

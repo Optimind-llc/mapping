@@ -50,6 +50,27 @@ class CreateBaseTablesForPress extends Migration
             $table->primary('pn');
         });
 
+        Schema::connection('press')->create('part_type_pair', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('left_pn', 10);
+            $table->string('right_pn', 10);
+
+            /**
+             * Add Foreign
+             */
+            $table->foreign('left_pn')
+                ->references('pn')
+                ->on('part_types')
+                ->onUpdate('cascade')
+                ->onDelete('restrict');
+
+            $table->foreign('right_pn')
+                ->references('pn')
+                ->on('part_types')
+                ->onUpdate('cascade')
+                ->onDelete('restrict');
+        });
+
         Schema::connection('press')->create('figures', function (Blueprint $table) {
             $table->increments('id');
             $table->string('pt_pn', 10);
@@ -155,6 +176,7 @@ class CreateBaseTablesForPress extends Migration
         Schema::connection('press')->drop('chokus');
         Schema::connection('press')->drop('combinations');
         Schema::connection('press')->drop('figures');
+        Schema::connection('press')->drop('part_type_pair');
         Schema::connection('press')->drop('part_types');
         Schema::connection('press')->drop('lines');
         Schema::connection('press')->drop('vehicles');

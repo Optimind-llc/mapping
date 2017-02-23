@@ -18,6 +18,7 @@ class CreateResultTablesForPress extends Migration
             $table->string('vehicle_code', 16);
             $table->string('pt_pn', 10);
             $table->integer('figure_id')->unsigned()->nullable();
+            $table->string('mold_type_num', 4);
             $table->tinyInteger('status')->unsigned()->default(1);
             $table->tinyInteger('f_keep')->unsigned()->default(0);
             $table->tinyInteger('m_keep')->unsigned()->default(0);

@@ -9,6 +9,8 @@ use App\Services\Choku;
 // Repositories
 use App\Repositories\InspectionResultRepository;
 use App\Repositories\LineRepository;
+// Services
+use App\Services\GeneratePDF;
 // Exceptions
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -52,13 +54,52 @@ class ReportController extends Controller
         ];
     }
 
-    public function export($process, $inspection, $line, $pn, $date, $choku)
+    public function export($line, $date, $choku)
     {
         $date_obj = Carbon::createFromFormat('Y-m-d H:i:s', $date.' 00:00:00');
         $choku_obj = new Choku($date_obj);
         $start = $choku_obj->getDayStart();
         $end = $choku_obj->getDayEnd();
 
-        return $this->inspectionResult->listForReport($process, $inspection, $line, $pn, $start, $end, $choku)->toArray();
+        $irs = $this->inspectionResult->listForReport($line, $start, $end, $choku);
+
+        // return $irs;
+
+        // $ft_ids = $irs->map(function($ir) {
+        //     return unserialize($ir->ft_ids);
+        // })
+        // ->flatten()
+        // ->unique();
+
+        // $failureTypes = \DB::connection('press')
+        //     ->table('failure_types')
+        //     ->whereIn('id', $ft_ids)
+        //     ->select(['id', 'name'])
+        //     ->get();
+
+
+        // $allFailures = $irs->map(function($ir) {
+        //     return $ir->failures;
+        // })
+        // ->flatten()
+        // ->groupBy('typeId')
+        // ->map(function($ft) {
+        //     return $ft->map(function($f) {
+        //         return $f->fQty;
+        //     })->sum();
+        // });
+
+        // return $allFailures;
+
+
+        // $grouped = $irs->groupBy('vehicle_code');
+
+        // return $grouped;
+
+
+        $pdf_path = 'report_'.$line.'_'.$date.'_'.$choku;
+        $pdf = new GeneratePDF($date, $line, $choku);
+        // return $pdf->generate($irs);
+        $pdf->generate($irs)->output($pdf_path, 'I');
     }
 }

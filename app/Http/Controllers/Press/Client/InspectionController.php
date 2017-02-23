@@ -117,6 +117,15 @@ class InspectionController extends Controller
                 'status' => $controlStatus
             ];
             $irArray['figure'] = config('app.url').$figure['path'];
+
+            $irArray['part'] = $irArray['pt_pn'];
+            unset($irArray['pt_pn']);
+
+            $irArray['hasPair'] = false;
+            if ($irArray['part_type']['left_pair'] !== null || $irArray['part_type']['right_pair'] !== null) {
+                $irArray['hasPair'] = true;
+            }
+            unset($irArray['part_type']);
         }
         else {
             $line_code = $this->line->getCodeByCodeInQR(substr($QRcode, 19, 3));
@@ -149,6 +158,7 @@ class InspectionController extends Controller
 
         $line_code = $this->line->getCodeByCodeInQR(substr($QRcode, 19, 3));
         $pt_pn = substr($QRcode, 26, 10);
+        $mold_type_num = trim(substr($QRcode, 22, 4));
         $vehicle_code = $this->combination->identifyVehicle($line_code, $pt_pn);
         $figure_id = $this->figure->onlyActive($pt_pn)->id;
 
@@ -160,6 +170,7 @@ class InspectionController extends Controller
             'line_code' => $line_code,
             'vehicle_code' => $vehicle_code,
             'pt_pn' => $pt_pn,
+            'mold_type_num' => $mold_type_num,
             'figure_id' => $figure_id,
             'status' => 1,
             'f_keep' => $request->keep,
@@ -198,6 +209,16 @@ class InspectionController extends Controller
         $irs = $this->inspectionResult->toBeModificated()->map(function($ir) {
             $irArray = $ir->toArray();
             $irArray['figure'] = config('app.url').$ir->figure->path;
+
+            $irArray['part'] = $irArray['pt_pn'];
+            unset($irArray['pt_pn']);
+
+            $irArray['hasPair'] = false;
+            if ($irArray['part_type']['left_pair'] !== null || $irArray['part_type']['right_pair'] !== null) {
+                $irArray['hasPair'] = true;
+            }
+            unset($irArray['part_type']);
+
             return $irArray;
         });
 
@@ -249,6 +270,16 @@ class InspectionController extends Controller
         $irs = $this->inspectionResult->getHistory($orderBy, $skip, $take)->map(function($ir) {
             $irArray = $ir->toArray();
             $irArray['figure'] = config('app.url').$ir->figure->path;
+
+            $irArray['part'] = $irArray['pt_pn'];
+            unset($irArray['pt_pn']);
+
+            $irArray['hasPair'] = false;
+            if ($irArray['part_type']['left_pair'] !== null || $irArray['part_type']['right_pair'] !== null) {
+                $irArray['hasPair'] = true;
+            }
+            unset($irArray['part_type']);
+
             return $irArray;
         });
 

@@ -84,13 +84,14 @@ class InspectionResultRepository
     {
         $ir = InspectionResult::withFigure()
             ->withFailures()
+            ->withPair()
             ->where('QRcode', '=', $QRcode)
             ->select([
                 'id',
                 'figure_id',
                 'line_code as line',
                 'vehicle_code as vehicle',
-                'pt_pn as part',
+                'pt_pn',
                 'f_keep as keep',
                 'discarded',
                 'inspected_choku as choku',
@@ -116,6 +117,7 @@ class InspectionResultRepository
         $new->line_code = $param['line_code'];
         $new->vehicle_code = $param['vehicle_code'];
         $new->pt_pn = $param['pt_pn'];
+        $new->mold_type_num = $param['mold_type_num'];
         $new->figure_id = $param['figure_id'];
         $new->status = $param['status'];
         $new->f_keep = $param['f_keep'];
@@ -146,6 +148,7 @@ class InspectionResultRepository
     {
         $ir = InspectionResult::withFigure()
             ->withFailures()
+            ->withPair()
             ->whereNotNull('control_num')
             ->where('discarded', '=', 0)
             ->where('f_keep', '=', 0)
@@ -155,9 +158,9 @@ class InspectionResultRepository
                 'figure_id',
                 'line_code as line',
                 'vehicle_code as vehicle',
-                'pt_pn as part',
-                // 'f_keep as keep',
-                // 'discarded',
+                'pt_pn',
+                'f_keep as keep',
+                'discarded',
                 'inspected_choku as choku',
                 'inspected_by as worker',
                 'palet_num as paletNum',
@@ -241,6 +244,7 @@ class InspectionResultRepository
     {
         $ir = InspectionResult::withFigure()
             ->withFailures()
+            ->withPair()
             // ->whereNotNull('control_num')
             ->whereNotNull('modificated_at')
             // ->where('discarded', '=', 0)
@@ -250,9 +254,9 @@ class InspectionResultRepository
                 'figure_id',
                 'line_code as line',
                 'vehicle_code as vehicle',
-                'pt_pn as part',
-                // 'f_keep as keep',
-                // 'discarded',
+                'pt_pn',
+                'f_keep as keep',
+                'discarded',
                 'inspected_choku as choku',
                 'inspected_by as worker',
                 'palet_num as paletNum',
@@ -295,18 +299,36 @@ class InspectionResultRepository
         return $delete;
     }
 
-    public function forReport($start, $end, $chokus)
+    public function listForReport($line, $start, $end, $choku)
     {
         // $chokus = [$choku, 'NA'];
-        $ir = InspectionResult::with([
-                'failures' => function($q) {
-                    return $q->select('ir_id', 'type_id');
-                }
+        $ir = InspectionResult::withFailures()
+            ->where('f_keep', '=', 0)
+            ->where('m_keep', '=', 0)
+            ->where('discarded', '=', 0)
+            ->where('line_code', '=', $line)
+            ->where('inspected_at', '>=', $start)
+            ->where('inspected_at', '<', $end)
+            ->where('inspected_choku', '=', $choku)
+            ->select([
+                'id',
+                'mold_type_num',
+                'line_code',
+                'vehicle_code',
+                'pt_pn',
+                'inspected_at',
+                'inspected_by',
+                'palet_num',
+                // 'palet_max',
+                'f_comment',
+                'processed_at',
+                'modificated_by',
+                'm_comment',
+                'modificated_at',
+                'ft_ids',
             ])
-            ->narrow($start, $end, 'inspected', $chokus)
-            ->select(['id', 'line_code'])
             ->get();
 
         return $ir;
-    }   
+    }
 }

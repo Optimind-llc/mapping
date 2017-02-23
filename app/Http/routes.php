@@ -61,7 +61,7 @@ Route::group(['prefix' => 'press/manager', 'namespace' => 'Press\Manager'], func
     Route::post('report/check', 'ReportController@check');
 
 
-    Route::get('report/export/{process}/{inspection}/{line}/{part}/{date}/{choku}', 'ReportController@export');
+    Route::get('report/export/{line}/{date}/{choku}', 'ReportController@export');
 });
 
 

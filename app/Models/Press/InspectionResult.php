@@ -56,11 +56,37 @@ class InspectionResult extends Model
         ]);
     }
 
+    public function scopeWithPair($query)
+    {
+        return $query->with([
+            'partType' => function($q) {
+                $q->select(['pn']);
+            },
+            'partType.leftPair' => function($q) {
+                $q->select(['id', 'left_pn', 'right_pn']);
+            },
+            'partType.rightPair' => function($q) {
+                $q->select(['id', 'left_pn', 'right_pn']);
+            }
+        ]);
+    }
+
     public function scopeHasFailures($query)
     {
         return $query->whereHas('failures', function($q) {
             $q->whereNull('m_qty');
         });
+    }
+
+
+
+    public function partType()
+    {
+        return $this->belongsTo(
+            'App\Models\Press\PartType',
+            'pt_pn',
+            'pn'
+        );
     }
 
     public function failures()
