@@ -19,8 +19,8 @@ class CreateResultTablesForPress extends Migration
             $table->string('pt_pn', 10);
             $table->integer('figure_id')->unsigned()->nullable();
             $table->tinyInteger('status')->unsigned()->default(1);
-            $table->tinyInteger('f_keep')->unsigned()->default(1);
-            $table->tinyInteger('m_keep')->unsigned()->default(1);
+            $table->tinyInteger('f_keep')->unsigned()->default(0);
+            $table->tinyInteger('m_keep')->unsigned()->default(0);
 
             $table->tinyInteger('discarded')->unsigned()->default(0);
             $table->string('inspected_choku', 8);
@@ -37,6 +37,7 @@ class CreateResultTablesForPress extends Migration
             $table->timestamp('processed_at');
             $table->timestamp('inspected_at');
             $table->timestamp('modificated_at')->nullable();
+            $table->timestamp('picked_at')->nullable();
             $table->timestamp('exported_at')->nullable();
             $table->tinyInteger('latest')->unsigned()->default(1);
             $table->integer('control_num')->nullable();
@@ -123,12 +124,15 @@ class CreateResultTablesForPress extends Migration
             $table->string('vehicle_code', 16);
             $table->string('pt_pn', 10);
             $table->integer('figure_id')->unsigned()->nullable();
-            $table->integer('capacity')->unsigned();
+            $table->tinyInteger('keep')->unsigned()->default(0);
+            $table->string('comment', 255)->nullable();
+            $table->string('ft_ids', 512)->nullable();
             $table->string('created_choku', 8);
             $table->string('updated_choku', 8)->nullable();
             $table->string('created_by', 8);
             $table->string('updated_by', 8)->nullable();
-            $table->timestamp('exported_at')->nullable();
+            $table->string('created_iPad_id', 255);
+            $table->string('updated_iPad_id', 255);
             $table->timestamps();
 
             /*
@@ -159,10 +163,10 @@ class CreateResultTablesForPress extends Migration
                 ->onDelete('set null');
         });
 
-        Schema::connection('press')->create('memoFailures', function (Blueprint $table) {
+        Schema::connection('press')->create('memo_failures', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('type_id')->unsigned();
-            $table->integer('ir_id')->unsigned();
+            $table->integer('memo_id')->unsigned();
             $table->integer('figure_id')->unsigned()->nullable();
             $table->integer('x1')->unsigned()->default(0);
             $table->integer('y1')->unsigned()->default(0);
@@ -182,9 +186,9 @@ class CreateResultTablesForPress extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->foreign('ir_id')
+            $table->foreign('memo_id')
                 ->references('id')
-                ->on('inspection_results')
+                ->on('memos')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
@@ -203,7 +207,7 @@ class CreateResultTablesForPress extends Migration
      */
     public function down()
     {
-        Schema::connection('press')->drop('memoFailures');
+        Schema::connection('press')->drop('memo_failures');
         Schema::connection('press')->drop('memos');
         Schema::connection('press')->drop('failures');
         Schema::connection('press')->drop('inspection_results');

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // 'server_place' = env('SERVER_PLACE', 'aaa'),
+    'server_place' => env('SERVER_PLACE', 'production'),
 
     /*
     |--------------------------------------------------------------------------

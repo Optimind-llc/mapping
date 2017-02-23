@@ -39,6 +39,7 @@ class CreateBaseTablesForPress extends Migration
         Schema::connection('press')->create('part_types', function (Blueprint $table) {
             $table->string('pn', 10);
             $table->string('name', 32)->unique()->nullable();
+            $table->tinyInteger('capacity')->unsigned()->default(0);
             $table->string('en', 32)->unique()->nullable();
             $table->integer('sort')->unsigned()->default(1);
             $table->timestamps();

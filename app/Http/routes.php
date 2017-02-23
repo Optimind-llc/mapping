@@ -17,16 +17,22 @@ Route::group(['prefix' => 'press', 'namespace' => 'Press'], function () {
             Route::post('save/modification', 'InspectionController@saveForModification');
             Route::post('history/modification', 'InspectionController@modificationHistory');
 
-
-
             Route::post('update', 'InspectionController@update');
-
-            Route::post('test', 'InspectionController@test');
+            Route::post('clear/controlNum', 'InspectionController@clearControlNum');
 
 
             // Route::get('figure/{pn}', 'InspectionController@getFigure');
             // Route::get('result/{controlNum}', 'InspectionController@result');
             // Route::post('delete', 'InspectionController@delete');
+        });
+
+        Route::group(['prefix' => 'memo'], function () {
+            Route::get('list', 'MemoController@list');
+            Route::post('initial', 'MemoController@initial');
+            Route::post('save', 'MemoController@save');
+
+            Route::post('history', 'MemoController@history');
+            Route::post('update', 'MemoController@update');
         });
     });
 });

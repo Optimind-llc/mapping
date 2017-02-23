@@ -11,8 +11,18 @@ class PartTypeRepository
 {
     public function all()
     {
-        $combination = PartType::all();
+        $pt = PartType::all();
 
-        return $combination;
+        return $pt;
+    }
+
+    public function updateCapacityByQRcode($QRcode)
+    {
+        $pt_pn = substr($QRcode, 26, 10);
+        $capacity = intval(substr($QRcode, 45, 5));
+
+        $pt = PartType::find($pt_pn);
+        $pt->capacity = $capacity;
+        $pt->save();
     }
 }

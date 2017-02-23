@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class PartType extends Model
 {
-    protected $connection = '950A';
+    protected $connection = 'press';
     protected $primaryKey = 'pn';
     protected $guarded = ['pn'];
     public $incrementing = false;
@@ -32,22 +32,4 @@ class PartType extends Model
             'id'
         );
     }
-
-    // public function holes()
-    // {
-    //     return $this->hasMany(
-    //         'App\Models\Hole',
-    //         'part_type_id',
-    //         'id'
-    //     );
-    // }
-
-    // public function inlines()
-    // {
-    //     return $this->hasMany(
-    //         'App\Models\Inline',
-    //         'part_type_id',
-    //         'id'
-    //     );
-    // }
 }

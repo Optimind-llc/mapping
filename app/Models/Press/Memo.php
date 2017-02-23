@@ -6,14 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class InspectionResult
+ * Class Memo
  * @package App\Models
  */
-class InspectionResult extends Model
+class Memo extends Model
 {
     protected $connection = 'press';
     protected $guarded = ['id'];
-    protected $dates = ['processed_at', 'inspected_at', 'modificated_at', 'exported_at'];
 
     public function scopeNarrow($query, $start, $end, $by, $chokus)
     {
@@ -30,15 +29,14 @@ class InspectionResult extends Model
             'failures' => function($q) {
                 $q->select([
                     'id',
-                    'ir_id',
+                    'memo_id',
                     'type_id as typeId',
                     'x1',
                     'y1',
                     'x2',
                     'y2',
-                    'f_qty as fQty',
-                    'm_qty as mQty',
-                    'responsible_for as responsibleFor'
+                    'palet_first as paletFirst',
+                    'palet_last as paletLast'
                 ]);
             }
         ]);
@@ -56,18 +54,11 @@ class InspectionResult extends Model
         ]);
     }
 
-    public function scopeHasFailures($query)
-    {
-        return $query->whereHas('failures', function($q) {
-            $q->whereNull('m_qty');
-        });
-    }
-
     public function failures()
     {
         return $this->hasMany(
-            'App\Models\Press\Failure',
-            'ir_id',
+            'App\Models\Press\MemoFailure',
+            'memo_id',
             'id'
         );
     }

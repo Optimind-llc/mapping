@@ -15,6 +15,7 @@ use App\Repositories\FigureRepository;
 use App\Repositories\InspectionResultRepository;
 use App\Repositories\LineRepository;
 use App\Repositories\CombinationRepository;
+use App\Repositories\PartTypeRepository;
 //Services
 use App\Services\TpsConnect;
 // Exceptions
@@ -32,6 +33,7 @@ class InspectionController extends Controller
     protected $inspectionResult;
     protected $line;
     protected $combination;
+    protected $partType;
 
     public function __construct (
         WorkerRepository $worker,
@@ -39,7 +41,8 @@ class InspectionController extends Controller
         FigureRepository $figure,
         InspectionResultRepository $inspectionResult,
         LineRepository $line,
-        CombinationRepository $combination
+        CombinationRepository $combination,
+        PartTypeRepository $partType
     )
     {
         $this->worker = $worker;
@@ -48,6 +51,7 @@ class InspectionController extends Controller
         $this->inspectionResult = $inspectionResult;
         $this->line = $line;
         $this->combination = $combination;
+        $this->partType = $partType;
     }
 
     public function initial(Request $request)
@@ -129,6 +133,8 @@ class InspectionController extends Controller
                 'figure' => config('app.url').$figure->path,
             ];
         }
+
+        $this->partType->updateCapacityByQRcode($QRcode);
 
         return [
             'status' => $status,
@@ -291,22 +297,18 @@ class InspectionController extends Controller
         }
     }
 
-
-
-
-
-
-
-
-
-    public function test(Request $request)
+    public function clearControlNum(Request $request)
     {
-        $iPadId = $request->iPadId;
-        $QRcode = $request->QRcode;
+        $inspectionId = $request->inspectionId;
+        $irs = $this->inspectionResult->clearControlNum($inspectionId);
 
-        $socket = new TpsConnect;
-        return $socket->setPostData($QRcode, $iPadId);
+        return [
+            'message' => 'clear control number succeeded'
+        ];
     }
+
+
+
 
 
 
@@ -345,7 +347,6 @@ class InspectionController extends Controller
             'vehicle' => $result->vehicle_code,
             'line' => $result->line_code,
             'partType' => $result->pt_pn,
-            'status' => $result->status,
             'createdChoku' => $result->created_choku,
             'createdBy' => $result->created_by,
             'paletNum' => $result->palet_num,

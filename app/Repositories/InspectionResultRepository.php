@@ -147,9 +147,9 @@ class InspectionResultRepository
         $ir = InspectionResult::withFigure()
             ->withFailures()
             ->whereNotNull('control_num')
-            ->whereNull('modificated_at')
             ->where('discarded', '=', 0)
             ->where('f_keep', '=', 0)
+            ->hasFailures()
             ->select([
                 'id',
                 'figure_id',
@@ -271,6 +271,14 @@ class InspectionResultRepository
         return $ir;
     }
 
+    public function clearControlNum($id)
+    {
+        $ir = InspectionResult::find($id);
+        $ir->control_num = null;
+        $ir->save();
+
+        return true;
+    }
 
 
 

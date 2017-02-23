@@ -13,11 +13,15 @@ class TpsConnect
     protected $responceData;
 
     public function __construct() {
-        $this->ip = config('socket.'.env('SERVER').'.ip');
-        $this->port = config('socket.'.env('SERVER').'.port');
+        $this->ip = config('socket.'.config('app.server_place').'.ip');
+        $this->port = config('socket.'.config('app.server_place').'.port');
         $this->now = date('YmdHis');
-var_dump(config('socket'), config('app.server_place'));
+    }
 
+    public function putSocketDummy()
+    {
+        $this->responceData = '3  16              14            14            3';
+        return true;
     }
 
     public function putSocket()
@@ -25,9 +29,9 @@ var_dump(config('socket'), config('app.server_place'));
         $responceData = null;
         $success = false;
         try{
-var_dump($this->ip, $this->port);
-
+            var_dump($this->ip, $this->port);
             $fp = fsockopen($this->ip, $this->port);
+
             if ($fp) {
                 \Log::debug('Start Socket');
 
