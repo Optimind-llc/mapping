@@ -24,10 +24,25 @@ class MemoRepository
 
     public function isKeeping($line_code, $vehicle_code, $pt_pn)
     {
-        $memo = Memo::where('line_code', '=', $line_code)
+        $memo = Memo::withPair()
+            ->withFailures()
+            ->withFigure()
+            ->where('line_code', '=', $line_code)
             ->where('vehicle_code', '=', $vehicle_code)
             ->where('pt_pn', '=', $pt_pn)
             ->where('keep', '=', 1)
+            ->select([
+                'id',
+                'figure_id',
+                'line_code as line',
+                'vehicle_code as vehicle',
+                'pt_pn',
+                'keep',
+                'comment',
+                'created_choku as choku',
+                'created_by as worker',
+                'created_at as inspectedAt'
+            ])
             ->first();
 
         return $memo;
@@ -81,14 +96,15 @@ class MemoRepository
 
     public function getHistory($orderBy, $skip, $take)
     {
-        $memo = Memo::withFigure()
+        $memo = Memo::withPair()
+            ->withFigure()
             ->withFailures()
             ->select([
                 'id',
                 'figure_id',
                 'line_code as line',
                 'vehicle_code as vehicle',
-                'pt_pn as part',
+                'pt_pn',
                 'keep',
                 'comment',
                 'created_choku as choku',

@@ -116,6 +116,40 @@ button.iconBtn {
   }
 }
 
+div.selectable {
+  border-radius: 4px;
+  background-color: #FFF;          
+  border: 1px solid #BBB;
+  cursor: pointer;
+  opacity: 0.7;
+
+  &:hover {
+    box-shadow: 0 0 3px #BBB;
+  }
+
+  p {
+    color: #BBB;
+  }
+
+  &:active {
+    box-shadow: none;
+  }
+
+  &.selected {
+    background-color: #4A4A4A;
+    border: 1px solid #4A4A4A;
+    cursor: default;
+    opacity: 1;
+
+    &:hover, :active {
+      box-shadow: none;
+    }
+
+    p {
+      color: #FFF;
+    }
+  }
+}
 
 div.divider {
   margin: 8px 20px;

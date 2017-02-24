@@ -299,6 +299,22 @@ class InspectionResultRepository
         return $delete;
     }
 
+    public function forReport($start, $end, $chokus)
+    {
+        // $chokus = [$choku, 'NA'];
+        $ir = InspectionResult::with([
+                'failures' => function($q) {
+                    return $q->select('ir_id', 'type_id');
+                }
+            ])
+            ->where('discarded', '=', 0)
+            ->narrow($start, $end, 'inspected', $chokus)
+            ->select(['id', 'line_code'])
+            ->get();
+
+        return $ir;
+    }   
+
     public function listForReport($line, $start, $end, $choku)
     {
         // $chokus = [$choku, 'NA'];
@@ -331,4 +347,58 @@ class InspectionResultRepository
 
         return $ir;
     }
+
+    public function listForMapping($line, $vehicle, $part, $start, $end, $chokus)
+    {
+        $ir = InspectionResult::withFailures()
+            ->where('f_keep', '=', 0)
+            ->where('m_keep', '=', 0)
+            ->where('discarded', '=', 0)
+            ->where('pt_pn', '=', $part)
+            ->where('inspected_at', '>=', $start)
+            ->where('inspected_at', '<', $end)
+            ->whereIn('inspected_choku', $chokus);
+
+        if ($line !== null) {
+            $ir = $ir->where('line_code', '=', $line);
+        }
+
+        if ($vehicle !== null) {
+            $ir = $ir->where('vehicle_code', '=', $vehicle);
+        }
+
+        $ir = $ir->select([
+            'id',
+            'inspected_choku',
+            'ft_ids'
+        ])
+        ->get();
+
+        $ft_ids = $ir->map(function($ir){
+            return unserialize($ir->ft_ids);
+        })
+        ->flatten()
+        ->unique();
+
+        $failures = $ir->map(function($ir){
+            return $ir->failures;
+        })
+        ->flatten()
+        ->map(function($f){
+            return [
+                'typeId' => $f->typeId,
+                'x' => $f->x1,
+                'y' => $f->y1,
+                'fQty' => $f->fQty,
+                'mQty' => $f->mQty,
+                'responsibleFor' => $f->responsibleFor
+            ];
+        });
+
+        return [
+            'ft_ids' => $ft_ids,
+            'failures' => $failures,
+        ];
+    }
+
 }

@@ -13,6 +13,7 @@ import './report.scss';
 // import RangeCalendar from '../components/rangeCalendar/rangeCalendar';
 import ReportHead from '../components/head/reportHead';
 import ReportBody from '../components/body/reportBody';
+import Modal from '../components/modal/modal';
 
 class Report extends Component {
   constructor(props, context) {
@@ -42,6 +43,15 @@ class Report extends Component {
     getReportData(date.format('YYYY-MM-DD'), choku.value);
   }
 
+  openModal(line) {
+    const { date, choku } = this.state;
+
+    this.setState({
+      modal: true,
+      path: `/press/manager/report/export/${line}/${date.format("YYYY-MM-DD")}/${choku.value}`
+    });
+  }
+
   render() {
     const { date, choku } = this.state;
     const { InitialData, ReportData, actions } = this.props;
@@ -67,6 +77,13 @@ class Report extends Component {
             vehicles={InitialData.vehicles}
             combinations={InitialData.combinations}
             count={ReportData.data}
+            openModal={(line) => this.openModal(line)}
+          />
+        }{
+          this.state.modal &&
+          <Modal
+            path={this.state.path}
+            close={() => this.setState({modal: false})}
           />
         }
       </div>

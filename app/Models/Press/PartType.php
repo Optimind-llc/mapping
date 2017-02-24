@@ -15,6 +15,13 @@ class PartType extends Model
     protected $guarded = ['pn'];
     public $incrementing = false;
 
+    public function scopeOnlyActive($query)
+    {
+        return $query->where('status', '=', 1)
+            ->orderBy('sort')
+            ->select(['pn']);
+    }
+
     public function leftPair()
     {
         return $this->hasOne(

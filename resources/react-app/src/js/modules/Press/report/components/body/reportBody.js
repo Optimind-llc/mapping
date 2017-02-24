@@ -13,14 +13,18 @@ class reportBody extends Component {
   }
 
   render() {
-    const { lines, vehicles, combinations, count } = this.props;
+    const { lines, vehicles, combinations, count, openModal } = this.props;
     const { choku } = this.state;
 
     return (
       <div className="bg-white report-body">
         {
           lines.map((l, li) =>
-            <div key={li} className={`report-panel ${count[l] ? '' : 'disabled'}`}>
+            <div
+              key={li}
+              className={`report-panel ${count[l] ? '' : 'disabled'}`}
+              onClick={() => openModal(l)}
+            >
               <p className="report-line-name">{l}</p>
               <p className="report-vehicle-head">車種</p>
               <div className="report-vehicle-body">
@@ -48,7 +52,8 @@ reportBody.propTypes = {
   lines: PropTypes.array.isRequired,
   vehicles: PropTypes.array.isRequired,
   combinations: PropTypes.array.isRequired,
-  count: PropTypes.object.isRequired
+  count: PropTypes.object.isRequired,
+  openModal: PropTypes.func.isRequired
 };
 
 export default reportBody;

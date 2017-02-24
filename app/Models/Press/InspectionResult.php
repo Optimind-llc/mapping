@@ -60,7 +60,7 @@ class InspectionResult extends Model
     {
         return $query->with([
             'partType' => function($q) {
-                $q->select(['pn']);
+                $q->select(['pn', 'capacity']);
             },
             'partType.leftPair' => function($q) {
                 $q->select(['id', 'left_pn', 'right_pn']);

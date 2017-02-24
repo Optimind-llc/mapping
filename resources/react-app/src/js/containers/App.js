@@ -24,14 +24,14 @@ class App extends Component {
 
     const links = {
       'press': [
-        { path: '/press/manager/dashboard', name: 'ダッシュボード', disable: false},
+        // { path: '/press/manager/dashboard', name: 'ダッシュボード', disable: false},
         { path: '/press/manager/mapping', name: 'マッピング', disable: false},
-        { path: '/press/manager/reference', name: '検査結果検索', disable: false },
+        { path: '/press/manager/reference', name: '検査結果検索', disable: true },
         { path: '/press/manager/report', name: '直レポート印刷', disable: false },
-        { path: '/press/manager/contact', name: '手直連絡票検索', disable: false }
+        { path: '/press/manager/contact', name: '手直連絡票検索', disable: true }
       ],
       'body': [
-        { path: '/body/manager/dashboard', name: 'ダッシュボード', disable: true},
+        // { path: '/body/manager/dashboard', name: 'ダッシュボード', disable: true},
         { path: '/body/manager/mapping', name: 'マッピング', disable: true},
         { path: '/body/manager/reference', name: '検査結果検索', disable: true },
         { path: '/body/manager/report', name: '直レポート印刷', disable: true },
@@ -41,10 +41,10 @@ class App extends Component {
 
     const masterlinks = {
       'press': [
-        { path: '/press/maintenance/worker', name: '担当者マスタ', disable: false },
-        { path: '/press/maintenance/failure', name: '不良区分マスタ', disable: false },
-        { path: '/press/maintenance/part', name: '品番マスタ', disable: false },
-        { path: '/press/maintenance/part', name: '部品ペアマスタ', disable: false }
+        { path: '/press/maintenance/worker', name: '担当者マスタ', disable: true },
+        { path: '/press/maintenance/failure', name: '不良区分マスタ', disable: true },
+        { path: '/press/maintenance/part', name: '品番マスタ', disable: true },
+        { path: '/press/maintenance/part', name: '部品ペアマスタ', disable: true }
       ],
       'body': [
         { path: '/body/maintenance/worker', name: '担当者マスタ', disable: true },

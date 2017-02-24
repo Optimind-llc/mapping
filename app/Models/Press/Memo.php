@@ -54,6 +54,30 @@ class Memo extends Model
         ]);
     }
 
+    public function scopeWithPair($query)
+    {
+        return $query->with([
+            'partType' => function($q) {
+                $q->select(['pn', 'capacity']);
+            },
+            'partType.leftPair' => function($q) {
+                $q->select(['id', 'left_pn', 'right_pn']);
+            },
+            'partType.rightPair' => function($q) {
+                $q->select(['id', 'left_pn', 'right_pn']);
+            }
+        ]);
+    }
+
+    public function partType()
+    {
+        return $this->belongsTo(
+            'App\Models\Press\PartType',
+            'pt_pn',
+            'pn'
+        );
+    }
+
     public function failures()
     {
         return $this->hasMany(

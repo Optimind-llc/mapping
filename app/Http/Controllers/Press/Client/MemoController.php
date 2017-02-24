@@ -60,11 +60,33 @@ class MemoController extends Controller
         foreach ($combinations as $c) {
             $keepingMemo = $this->memo->isKeeping($c['l'], $c['v'], $c['p']);
 
+            if ($keepingMemo !== null) {
+                $keepingMemoArray = $keepingMemo->toArray();
+
+                $figure = $keepingMemo['figure'];
+                $keepingMemoArray['figure'] = config('app.url').$figure['path'];
+
+                $keepingMemoArray['part'] = $keepingMemo['pt_pn'];
+                unset($keepingMemoArray['pt_pn']);
+
+                $keepingMemoArray['capacity'] = $keepingMemo['partType']['capacity'];
+
+                $keepingMemoArray['hasPair'] = false;
+                if ($keepingMemo['partType']['left_pair'] !== null || $keepingMemo['partType']['right_pair'] !== null) {
+                    $keepingMemoArray['hasPair'] = true;
+                }
+                unset($keepingMemoArray['part_type']);
+            }
+            else {
+                $keepingMemoArray = null;
+            }
+
+
             $result[] = [
                 'line' => $c['l'],
                 'vehicle' => $c['v'],
                 'part' => $c['p'],
-                'keepingMemo' => $keepingMemo
+                'keepingMemo' => $keepingMemoArray
             ];
         }
 
@@ -122,12 +144,22 @@ class MemoController extends Controller
         $skip = $request->skip;
         $take = $request->take;
 
-        $irs = $this->memo->getHistory($orderBy, $skip, $take)->map(function($ir) {
-            $irArray = $ir->toArray();
-            $irArray['figure'] = config('app.url').$ir->figure->path;
-            return $irArray;
+        $memos = $this->memo->getHistory($orderBy, $skip, $take)->map(function($memo) {
+            $memoArray = $memo->toArray();
+            $memoArray['figure'] = config('app.url').$memo->figure->path;
+    
+            $memoArray['part'] = $memo['pt_pn'];
+            unset($memoArray['pt_pn']);
+
+            $memoArray['hasPair'] = false;
+            if ($memo['partType']['left_pair'] !== null || $memo['partType']['right_pair'] !== null) {
+                $memoArray['hasPair'] = true;
+            }
+            unset($memoArray['part_type']);
+
+            return $memoArray;
         });
 
-        return $irs;
+        return $memos;
     }
 }

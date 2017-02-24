@@ -63,42 +63,9 @@ class ReportController extends Controller
 
         $irs = $this->inspectionResult->listForReport($line, $start, $end, $choku);
 
-        // return $irs;
-
-        // $ft_ids = $irs->map(function($ir) {
-        //     return unserialize($ir->ft_ids);
-        // })
-        // ->flatten()
-        // ->unique();
-
-        // $failureTypes = \DB::connection('press')
-        //     ->table('failure_types')
-        //     ->whereIn('id', $ft_ids)
-        //     ->select(['id', 'name'])
-        //     ->get();
-
-
-        // $allFailures = $irs->map(function($ir) {
-        //     return $ir->failures;
-        // })
-        // ->flatten()
-        // ->groupBy('typeId')
-        // ->map(function($ft) {
-        //     return $ft->map(function($f) {
-        //         return $f->fQty;
-        //     })->sum();
-        // });
-
-        // return $allFailures;
-
-
-        // $grouped = $irs->groupBy('vehicle_code');
-
-        // return $grouped;
-
-
         $pdf_path = 'report_'.$line.'_'.$date.'_'.$choku;
         $pdf = new GeneratePDF($date, $line, $choku);
+
         // return $pdf->generate($irs);
         $pdf->generate($irs)->output($pdf_path, 'I');
     }

@@ -174,8 +174,8 @@ class GeneratePDF
                 }
 
                 $tcpdf->MultiCell($d2[0], $cellHeight*2, 'コメント', 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth + array_sum(array_slice($d2,0,0)), $A3['y2']+($row-1)*$cellHeight);
-                $tcpdf->MultiCell($d2[1], $cellHeight*2, '手直者', 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth + array_sum(array_slice($d2,0,1)), $A3['y2']+($row-1)*$cellHeight);
-                $tcpdf->MultiCell($d2[2], $cellHeight*2, '加工実績日時', 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth + array_sum(array_slice($d2,0,2)), $A3['y2']+($row-1)*$cellHeight);
+                $tcpdf->MultiCell($d2[1], $cellHeight*2, '加工実績日時', 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth + array_sum(array_slice($d2,0,1)), $A3['y2']+($row-1)*$cellHeight);
+                $tcpdf->MultiCell($d2[2], $cellHeight*2, '手直者', 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth + array_sum(array_slice($d2,0,2)), $A3['y2']+($row-1)*$cellHeight);
                 $tcpdf->MultiCell($d2[3], $cellHeight*2, 'コメント', 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth + array_sum(array_slice($d2,0,3)), $A3['y2']+($row-1)*$cellHeight);
                 $tcpdf->MultiCell($d2[4], $cellHeight*2, '手直日時', 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth + array_sum(array_slice($d2,0,4)), $A3['y2']+($row-1)*$cellHeight);
                 $tcpdf->MultiCell($d2[5], $cellHeight*2, '後工程引取時間', 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth + array_sum(array_slice($d2,0,5)), $A3['y2']+($row-1)*$cellHeight);
@@ -222,6 +222,7 @@ class GeneratePDF
                     if ($ir->m_comment) {
                         $mComment = mb_substr($ir->m_comment, 0, 4, 'UTF-8').'..';
                     }
+                    $inspectedAt = $ir->inspected_at->format('m/d H:i');
                     $processedAt = $ir->processed_at->format('m/d H:i');
 
                     $modificatedAt = '-';
@@ -230,7 +231,7 @@ class GeneratePDF
                     }
 
                     $tcpdf->MultiCell($d2[0], $cellHeight, $fComment, 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth + array_sum(array_slice($d2,0,0)), $A3['y2']+($row-1)*$cellHeight);
-                    $tcpdf->MultiCell($d2[1], $cellHeight, $processedAt, 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth + array_sum(array_slice($d2,0,1)), $A3['y2']+($row-1)*$cellHeight);
+                    $tcpdf->MultiCell($d2[1], $cellHeight, $inspectedAt, 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth + array_sum(array_slice($d2,0,1)), $A3['y2']+($row-1)*$cellHeight);
                     $tcpdf->MultiCell($d2[2], $cellHeight, $ir->modificated_by, 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth + array_sum(array_slice($d2,0,2)), $A3['y2']+($row-1)*$cellHeight);
                     $tcpdf->MultiCell($d2[3], $cellHeight, $mComment, 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth + array_sum(array_slice($d2,0,3)), $A3['y2']+($row-1)*$cellHeight);
                     $tcpdf->MultiCell($d2[4], $cellHeight, $modificatedAt, 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth + array_sum(array_slice($d2,0,4)), $A3['y2']+($row-1)*$cellHeight);

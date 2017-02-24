@@ -131,6 +131,9 @@ class InspectionController extends Controller
             $line_code = $this->line->getCodeByCodeInQR(substr($QRcode, 19, 3));
             $pt_pn = substr($QRcode, 26, 10);
             $vehicle_code = $this->combination->identifyVehicle($line_code, $pt_pn);
+            $processed_at = Carbon::createFromFormat('YmdHis', substr($QRcode, 82, 14))->format('m/d H:i');
+            $palet_num = intval(substr($QRcode, 96, 3));
+            $palet_max = intval(substr($QRcode, 99, 3));
 
             $figure = $this->figure->onlyActive($pt_pn);
 
@@ -139,6 +142,9 @@ class InspectionController extends Controller
                 'line' => $line_code,
                 'vehicle' => $vehicle_code,
                 'part' => $pt_pn,
+                'processedAt' => $processed_at,
+                'paletNum' => $palet_num,
+                'paletMax' => $palet_max,
                 'figure' => config('app.url').$figure->path,
             ];
         }

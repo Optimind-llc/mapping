@@ -31,7 +31,7 @@ class reportHead extends Component {
             {label: '白直', value: ['W']},
             {label: '黄直', value: ['Y']},
             {label: '黒直', value: ['B'], disabled: true},
-            {label: '全直', value: ['W', 'Y', 'B']}
+            // {label: '全直', value: ['W', 'Y', 'B']}
           ]}
           onChange={value => changeChoku(value)}
         />

@@ -42,6 +42,7 @@ class CreateBaseTablesForPress extends Migration
             $table->tinyInteger('capacity')->unsigned()->default(0);
             $table->string('en', 32)->unique()->nullable();
             $table->integer('sort')->unsigned()->default(1);
+            $table->integer('status')->unsigned()->default(1);
             $table->timestamps();
 
             /**

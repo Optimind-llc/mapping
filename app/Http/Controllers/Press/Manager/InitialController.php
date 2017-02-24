@@ -46,8 +46,7 @@ class InitialController extends Controller
             'chokus' => [],
             'vehicles' => $this->vehicle->onlyActive(),
             'lines' => $this->line->onlyActive(),
-            'parts' => [],
-            // 'parts' => $this->part->onlyActive(),
+            'parts' => $this->partType->onlyActive(),
             'combinations' => $this->combination->onlyActive()
         ]];
     }

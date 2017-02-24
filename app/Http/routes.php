@@ -60,6 +60,7 @@ Route::group(['prefix' => 'press/manager', 'namespace' => 'Press\Manager'], func
     Route::get('initial', 'InitialController@all');
     Route::post('report/check', 'ReportController@check');
 
+    Route::post('mapping', 'MappingController@getData');
 
     Route::get('report/export/{line}/{date}/{choku}', 'ReportController@export');
 });
