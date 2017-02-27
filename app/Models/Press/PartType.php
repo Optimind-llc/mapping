@@ -43,7 +43,7 @@ class PartType extends Model
     public function figures()
     {
         return $this->hasMany(
-            'App\Models\Vehicle950A\Figure',
+            'App\Models\Press\Figure',
             'pt_pn',
             'pn'
         );

@@ -33,7 +33,7 @@ class PartTypeRepository
         elseif($pt->rightPair) {
             return [
                 'self' => 'right',
-                'pairPn' => $pt->rightPair->right_pn,
+                'pairPn' => $pt->rightPair->left_pn,
             ];
         }
     }
@@ -60,5 +60,16 @@ class PartTypeRepository
         $pt = PartType::find($pt_pn);
         $pt->capacity = $capacity;
         $pt->save();
+    }
+
+    public function findByPn($pn)
+    {
+        $pt = PartType::with([
+            'figures' => function($q) {
+                $q->where('status', '=', 1);
+            }
+        ])->find($pn);
+
+        return $pt;
     }
 }

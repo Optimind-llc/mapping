@@ -16,8 +16,21 @@ class FailureTypeRepository
         });
     }
 
+    public function getByIds($ids)
+    {
+        return FailureType::whereIn('id', $ids)
+            ->select(['id', 'name'])
+            ->orderBy('id')
+            ->get();
+    }
+
     public function onlyActive()
     {
         return FailureType::onlyActive()->get()->toArray();
+    }
+
+    public function withDeactive()
+    {
+        return FailureType::select(['id', 'name'])->get();
     }
 }

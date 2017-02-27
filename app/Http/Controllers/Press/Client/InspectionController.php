@@ -78,6 +78,7 @@ class InspectionController extends Controller
                 }
 
                 return [
+                    'id' => $ir->id,
                     'controlNum' => $controlNum,
                     'status' => $controlStatus,
                     'choku' => $ir->choku,
@@ -130,17 +131,36 @@ class InspectionController extends Controller
         else {
             $line_code = $this->line->getCodeByCodeInQR(substr($QRcode, 19, 3));
             $pt_pn = substr($QRcode, 26, 10);
-            $vehicle_code = $this->combination->identifyVehicle($line_code, $pt_pn);
-            $processed_at = Carbon::createFromFormat('YmdHis', substr($QRcode, 82, 14))->format('m/d H:i');
+            $combination = $this->combination->identifyVehicle($line_code, $pt_pn);
+
+            if (is_null($combination)) {
+                return \Response::json([
+                    'status' => 1,
+                    'message' => 'Vehicle not found',
+                ], 400);
+            }
+
+            $processed_at_string = substr($QRcode, 82, 14);
+            $processed_at = null;
+            if ($processed_at_string != '00000000000000') {
+                $processed_at = Carbon::createFromFormat('YmdHis', $processed_at_string)->toDateTimeString(); 
+            }
+
             $palet_num = intval(substr($QRcode, 96, 3));
             $palet_max = intval(substr($QRcode, 99, 3));
 
             $figure = $this->figure->onlyActive($pt_pn);
+            if (is_null($combination)) {
+                return \Response::json([
+                    'status' => 1,
+                    'message' => 'Figure not found',
+                ], 400);
+            }
 
             $status = 0;
             $irArray = [
                 'line' => $line_code,
-                'vehicle' => $vehicle_code,
+                'vehicle' => $combination->vehicle_code,
                 'part' => $pt_pn,
                 'processedAt' => $processed_at,
                 'paletNum' => $palet_num,
@@ -165,16 +185,35 @@ class InspectionController extends Controller
         $line_code = $this->line->getCodeByCodeInQR(substr($QRcode, 19, 3));
         $pt_pn = substr($QRcode, 26, 10);
         $mold_type_num = trim(substr($QRcode, 22, 4));
-        $vehicle_code = $this->combination->identifyVehicle($line_code, $pt_pn);
+        $combination = $this->combination->identifyVehicle($line_code, $pt_pn);
+
+        if (is_null($combination)) {
+            return \Response::json([
+                'status' => 1,
+                'message' => 'Vehicle not found',
+            ], 400);
+        }
+
+
+
         $figure_id = $this->figure->onlyActive($pt_pn)->id;
 
-        $processed_at = Carbon::createFromFormat('YmdHis', substr($QRcode, 82, 14))->toDateTimeString(); 
+        $processed_at_string = substr($QRcode, 82, 14);
+        $processed_at = null;
+        if ($processed_at_string != '00000000000000') {
+            $processed_at = Carbon::createFromFormat('YmdHis', $processed_at_string)->toDateTimeString(); 
+        }
+
+        $controlNum = $request->controlNum;
+        if ($controlNum === 0) {
+            $controlNum = null;
+        }
 
         DB::connection('press')->beginTransaction();
         $param = [
             'QRcode' => $QRcode,
             'line_code' => $line_code,
-            'vehicle_code' => $vehicle_code,
+            'vehicle_code' => $combination->vehicle_code,
             'pt_pn' => $pt_pn,
             'mold_type_num' => $mold_type_num,
             'figure_id' => $figure_id,
@@ -188,7 +227,7 @@ class InspectionController extends Controller
             'f_comment' => $request->comment,
             'ft_ids' => $this->failureType->activeIds(),
             'processed_at' => $processed_at,
-            'control_num' => $request->controlNum,
+            'control_num' => $controlNum,
             'inspected_iPad_id' => $iPadId
         ];
 
@@ -199,11 +238,14 @@ class InspectionController extends Controller
 
         if ($this->inspectionResult->create($param, $fs)) {
             DB::connection('press')->commit();
-            return [
-                'message' => 'Save inspection succeeded'
-            ];
+            // \Artisan::call('SaveTpsResponce');
+
+            return \Response::json([
+                'message' => 'Save inspection succeeded',
+            ], 200);
         } else {
             DB::connection('press')->rollBack();
+
             return \Response::json([
                 'message' => 'Save inspection failed',
             ], 400);

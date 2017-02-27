@@ -1,254 +1,94 @@
-#referenceWrap {
+#press-referance-wrap {
   padding: 4px 4px 0 4px;
 
-  .serch-wrap {
-    padding: 0 0 10px 0;
-    .serch-area {
-      padding: 10px 10px 4px 10px;
-
-      .flex-row {
-        display: flex;
-        flex-flow: row nowrap;
-
-        > div {
-          margin: 0 4px;
-
-          &:nth-child(1) {
-            margin-left: 0;
-          }
-
-          &:nth-last-of-type(1) {
-            margin-right: 0;
-          }
-        }
-
-      }
-
-      .col-1 {
-        justify-content: space-between;
-        margin-bottom: 10px;
-
-        > div {
-          flex-basis: 280px;
-          flex-grow: 1;
-          display: flex;
-          flex-flow: row nowrap;
-          margin: 0 10px;
-
-          &:nth-child(1) {
-            margin-left: 0;
-          }
-
-          &:nth-last-of-type(1) {
-            margin-right: 0;
-          }
-
-          > p {
-            margin: 0 8px 0 0;
-            width: 30px;
-            line-height: 30px;
-          }
-        }
-
-        .part-wrap {
-          flex-basis: 300px;
-
-          > div {
-            width: calc(100% - 30px);
-          }
-        }
-        .process-wrap {
-          flex-basis: 300px;
-
-          > div {
-            width: calc(100% - 30px);
-          }
-        }
-        .inspection-wrap {
-          flex-basis: 300px;
-
-          > div {
-            width: calc(100% - 30px);
-          }
-        }
-      }
-
-      .col-2 {
-        justify-content: space-between;
-        font-size: 14px;
-
-        .advanced-wrap {
-          flex-basis: 800px;
-          flex-grow: 1;
-          padding: 6px;
-          border: 1px solid #BBB;
-          border-radius: 4px;
-          color: #BBB;
-          opacity: 0.4;
-          p {
-            margin: 0;
-          }
-
-          &.active {
-            background-color: #4A4A4A;
-            cursor: default;
-            color: #FFF;
-            opacity: 1;
-            p {
-              color: #FFF;
-            }
-          }
-
-          > div > div {
-            display: flex;
-            flex-flow: row nowrap;
-            align-items: flex-start;
-
-            > div {
-              display: flex;
-              flex-flow: row nowrap;
-              //align-items: flex-start;
-              margin-right: 6px;
-
-              &:nth-last-of-type(1) {
-                margin-right: 0;
-              }
-
-              > p {
-                line-height: 30px;
-                margin: 0 4px;
-              }
-              > div {
-                flex-grow: 1;
-              }
-            }
-          }
-
-          div.row-1 {
-            > div:nth-child(1) {
-              flex-basis: 110px;
-              flex-grow: 1;
-
-              div {
-                flex-basis: 80px;
-                flex-grow: 1;
-              }
-            }
-            > div:nth-child(2) {
-              flex-basis: 120px;
-              flex-grow: 1;
-
-              div {
-                flex-basis: 80px;
-                flex-grow: 1;
-              }
-            }
-            > div:nth-child(3) {
-              flex-basis: 460px;
-
-            }
-          }
-
-          div.row-2 {
-            margin-top: 10px;
-
-            > div:nth-child(1) {
-              flex-basis: 216px;
-              flex-grow: 1;
-
-              > div {
-                flex-basis: 180px;
-                flex-grow: 1;
-              }
-            }
-            > div:nth-child(2) {
-              flex-basis: 216px;
-              flex-grow: 1;
-
-              > div {
-                flex-basis: 180px;
-                flex-grow: 1;
-              }
-            }
-            > div:nth-child(3) {
-              flex-basis: 236px;
-              flex-grow: 1;
-
-              > div {
-                flex-basis: 180px;
-                flex-grow: 1;
-              }
-            }
-          }
-        }
-
-        .panel-id-wrap {
-          flex-basis: 150px;
-          padding: 6px;
-          border: 1px solid #BBB;
-          border-radius: 4px;
-          color: #BBB;
-
-          &.active {
-            background-color: #4A4A4A;
-            cursor: default;
-            color: #FFF;
-            p {
-              color: #FFF;
-            }
-          }
-
-          p {
-            margin: 0 0 10px 0;
-          }
-
-          input {
-            height: 30px;
-            box-sizing: border-box;
-            border-radius: 4px;
-            border: 1px solid rgb(204, 204, 204);            
-          }
-
-        }
-      }
+  .referance-header {
+    > div.row {
+      padding: 10px;
     }
 
-    button.serch {
-      display: block;
-      margin: 0 auto;
-    }
+    div.row {
+      > div, > span, > p {
+        float: left;
+        margin-right: 12px;
+      }
 
-    .serch-btn {
-      height: 32px;
-      width: 140px;
-      margin: 0 auto;
-      border: 1px solid #BBB;
-      border-radius: 4px;
-      color: #BBB;
+      > div.Select {
+        width: 200px;
 
-      p {
-        margin: 0;
-        padding: 0;
+        &.judgement {
+          width: 90px;
+        }
+
+        &.failure-types {
+          width: 440px;
+        }
+      }
+
+      &:last-child > button {
+        margin: 0 auto;
+        display: block;
+      }
+
+      > p {
+        margin-right: 4px;
+        height: 30px;
         line-height: 30px;
-        text-align: center;
+        text-align: right;
       }
 
-      &.active {
-        background-color: #4A4A4A;
-        cursor: default;
-        color: #FFF;
+      p.realtime {
+        width: 274px;
+        text-align: center;
+        margin: 0;
+      }
 
-        p {
-          color: #FFF;
+      &::after {
+        content: '';
+        display: block;
+        clear: both;
+      }
+    }
+
+    button.show {
+      display: block;
+      float: right;
+      margin: 10px 10px 10px 0;
+      background-color: #4A4A4A;
+      border: 1px solid #4A4A4A;
+      border-radius: 4px;
+      color: #FFF;
+      height: 84px;
+      width: 60px;
+
+      &:hover {
+        box-shadow: 0 0 5px #4A4A4A;
+      }
+
+      &:active {
+        box-shadow: none;
+      }
+
+      &.disabled {
+        cursor: not-allowed;
+        pointer-events : none;
+        background-color: #FFF;          
+        border: 1px solid #BBB;
+        color: #BBB;
+        &:hover, :active {
+          box-shadow: none;
         }
       }
+    }
+
+    &::after {
+      content: '';
+      display: block;
+      clear: both;
     }
   }
 
   .result-wrap {
-    position: relative;
-    margin-top: 10px;
+    margin-top: 4px; 
     padding: 4px;
-    min-height: 120px;
   }
 }

@@ -56,6 +56,15 @@ class InspectionResult extends Model
         ]);
     }
 
+    public function scopeWithPart($query)
+    {
+        return $query->with([
+            'partType' => function($q) {
+                $q->select(['pn', 'capacity']);
+            }
+        ]);
+    }
+
     public function scopeWithPair($query)
     {
         return $query->with([
@@ -70,15 +79,6 @@ class InspectionResult extends Model
             }
         ]);
     }
-
-    public function scopeHasFailures($query)
-    {
-        return $query->whereHas('failures', function($q) {
-            $q->whereNull('m_qty');
-        });
-    }
-
-
 
     public function partType()
     {

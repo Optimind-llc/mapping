@@ -67,6 +67,9 @@ class GeneratePDF
         $this->renderTitle($tcpdf);
 
         $allCount = $irs->count();
+        $all_vehicle_sum = $irs->map(function($ir) {
+            return $ir->partType->capacity;
+        })->sum();
 
         $ft_ids = $irs->map(function($ir) {
             return unserialize($ir->ft_ids);
@@ -90,7 +93,7 @@ class GeneratePDF
             })->sum();
         });
 
-        $allFailuresSum = $allFailures->sum();
+        // $allFailuresSum = $allFailures->sum();
 
         $cellWidth = 9;
         $cellHeight = 4;
@@ -110,7 +113,7 @@ class GeneratePDF
             $col = 1;
             $tcpdf->MultiCell($cellWidth, $cellHeight, '加工総数', 0, 'C', 0, 1, $A3['x0'] + 38+($col-1)*$cellWidth, $A3['y1']+($row-1)*$cellHeight);
             $col = 2;
-            $tcpdf->MultiCell($cellWidth, $cellHeight, $allCount, 0, 'C', 0, 1, $A3['x0'] + 38+($col-1)*$cellWidth, $A3['y1']+($row-1)*$cellHeight);
+            $tcpdf->MultiCell($cellWidth, $cellHeight, $all_vehicle_sum, 0, 'C', 0, 1, $A3['x0'] + 38+($col-1)*$cellWidth, $A3['y1']+($row-1)*$cellHeight);
             $col = 3;
             $tcpdf->MultiCell($cellWidth, $cellHeight, '直不良数', 0, 'C', 0, 1, $A3['x0'] + 38+($col-1)*$cellWidth, $A3['y1']+($row-1)*$cellHeight);
 
@@ -137,7 +140,7 @@ class GeneratePDF
                     $failure_sum = $allFailures[$ft['id']];
                 }
 
-                $parcent = number_format($failure_sum/$allFailuresSum*100, 1).' %';
+                $parcent = number_format($failure_sum/$all_vehicle_sum*100, 1).' %';
 
                 $tcpdf->MultiCell($cellWidth, $cellHeight, $parcent, 0, 'C', 0, 1, $A3['x0'] + 38+($col-1)*$cellWidth, $A3['y1']+($row-1)*$cellHeight);
             }
@@ -157,6 +160,10 @@ class GeneratePDF
                 $tcpdf->AddPage('P', 'A3');
                 $block = 0;
             }
+
+                $vehicle_sum = $irs->map(function($ir) {
+                    return $ir->partType->capacity;
+                })->sum();
 
             $row = $block+1;
                 $tcpdf->MultiCell($d1[0], $cellHeight*2, 'No.', 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,0)), $A3['y2']+($row-1)*$cellHeight);
@@ -186,13 +193,15 @@ class GeneratePDF
 
             $row = $block+3;
                 foreach ($irs as $i => $ir) {
+                    $status = $ir->failures->count() > 0 ? '×' : '○';
+
                     $tcpdf->MultiCell($d1[0], $cellHeight, $i+1, 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,0)), $A3['y2']+($row-1)*$cellHeight);
                     $tcpdf->MultiCell($d1[1], $cellHeight, $ir->mold_type_num, 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,1)), $A3['y2']+($row-1)*$cellHeight);
                     $tcpdf->MultiCell($d1[2], $cellHeight, $ir->pt_pn, 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,2)), $A3['y2']+($row-1)*$cellHeight);
                     $tcpdf->MultiCell($d1[3], $cellHeight, $ir->vehicle_code, 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,3)), $A3['y2']+($row-1)*$cellHeight);
                     $tcpdf->MultiCell($d1[4], $cellHeight, $ir->inspected_by, 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,4)), $A3['y2']+($row-1)*$cellHeight);
                     $tcpdf->MultiCell($d1[5], $cellHeight, $ir->palet_num, 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,5)), $A3['y2']+($row-1)*$cellHeight);
-                    $tcpdf->MultiCell($d1[6], $cellHeight, '◯', 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,6)), $A3['y2']+($row-1)*$cellHeight);
+                    $tcpdf->MultiCell($d1[6], $cellHeight, $status, 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,6)), $A3['y2']+($row-1)*$cellHeight);
 
                     $ir_failures = $ir->failures
                         ->groupBy('typeId')
@@ -223,7 +232,7 @@ class GeneratePDF
                         $mComment = mb_substr($ir->m_comment, 0, 4, 'UTF-8').'..';
                     }
                     $inspectedAt = $ir->inspected_at->format('m/d H:i');
-                    $processedAt = $ir->processed_at->format('m/d H:i');
+                    // $processedAt = $ir->processed_at->format('m/d H:i');
 
                     $modificatedAt = '-';
                     if ($ir->modificated_at) {
@@ -259,7 +268,7 @@ class GeneratePDF
                 $all_failures_sum = $all_failures->sum();
 
                 $tcpdf->MultiCell($d1[4], $cellHeight, '加工数', 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,4)), $A3['y2']+($row-1)*$cellHeight);
-                $tcpdf->MultiCell($d1[5], $cellHeight, $irs->count(), 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,5)), $A3['y2']+($row-1)*$cellHeight);
+                $tcpdf->MultiCell($d1[5], $cellHeight, $vehicle_sum, 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,5)), $A3['y2']+($row-1)*$cellHeight);
                 $tcpdf->MultiCell($d1[6], $cellHeight, '不良小計', 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,6)), $A3['y2']+($row-1)*$cellHeight);
 
                 $col = 1;
@@ -276,18 +285,18 @@ class GeneratePDF
                 }
 
             $row = $row+1;
-                $all_failures = $irs->map(function($ir) {
-                    return $ir->failures;
-                })
-                ->flatten()
-                ->groupBy('typeId')
-                ->map(function($ft) {
-                    return $ft->map(function($f) {
-                        return $f->fQty;
-                    })->sum();
-                });
+                // $all_failures = $irs->map(function($ir) {
+                //     return $ir->failures;
+                // })
+                // ->flatten()
+                // ->groupBy('typeId')
+                // ->map(function($ft) {
+                //     return $ft->map(function($f) {
+                //         return $f->fQty;
+                //     })->sum();
+                // });
 
-                $all_failures_sum = $all_failures->sum();
+                // $all_failures_sum = $all_failures->sum();
 
                 $tcpdf->MultiCell($d1[6], $cellHeight, '不良率', 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,6)), $A3['y2']+($row-1)*$cellHeight);
 
@@ -298,7 +307,7 @@ class GeneratePDF
                         $failure_sum = $all_failures[$ft['id']];
                     }
 
-                    $parcent = number_format($failure_sum/$all_failures_sum*100, 1).' %';
+                    $parcent = number_format($failure_sum/$vehicle_sum*100, 1).' %';
 
                     $tcpdf->MultiCell($cellWidth, $cellHeight, $parcent, 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth, $A3['y2']+($row-1)*$cellHeight);
                     $col = $col+1;

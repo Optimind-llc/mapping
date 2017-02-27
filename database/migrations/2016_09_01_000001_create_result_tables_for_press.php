@@ -35,7 +35,7 @@ class CreateResultTablesForPress extends Migration
             $table->string('ft_ids', 512)->nullable();
             $table->string('f_comment', 255)->nullable();
             $table->string('m_comment', 255)->nullable();
-            $table->timestamp('processed_at');
+            $table->timestamp('processed_at')->nullable();
             $table->timestamp('inspected_at');
             $table->timestamp('modificated_at')->nullable();
             $table->timestamp('picked_at')->nullable();

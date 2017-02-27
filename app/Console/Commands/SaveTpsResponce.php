@@ -54,9 +54,9 @@ class SaveTpsResponce extends Command
         $tpsConnect = new TpsConnect;
         foreach ($irs as $ir) {
             $tpsConnect->setPostData($ir->QRcode, $ir->iPadId);
-            // $tpsConnect->putSocket();
-            $tpsConnect->putSocketDummy();
-            $responceData = $tpsConnect->getResponceData();
+            $tpsConnect->putSocket();
+            // $tpsConnect->putSocketDummy();
+            $responceData = $tpsConnect->getResponseData();
 
             if ($responceData !== null) {
                 $ir->tpsResponce = $responceData;
@@ -65,6 +65,6 @@ class SaveTpsResponce extends Command
             }
         }
 
-        $this->info('ok');
+        // $this->info('ok');
     }
 }

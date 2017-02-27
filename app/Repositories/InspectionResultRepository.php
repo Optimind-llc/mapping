@@ -26,6 +26,9 @@ class InspectionResultRepository
     {
         foreach ($fs as $f) {
             $m_qty = array_key_exists('mQty', $f) ? $f['mQty'] : null;
+            if ($m_qty == -1) {
+                $m_qty = null;
+            }
 
             $param = [
                 'type_id' => $f['typeId'],
@@ -66,6 +69,7 @@ class InspectionResultRepository
     {
         $ir = InspectionResult::whereNotNull('control_num')
             ->select([
+                'id',
                 'line_code as line',
                 'vehicle_code as vehicle',
                 'pt_pn as part',
@@ -152,7 +156,9 @@ class InspectionResultRepository
             ->whereNotNull('control_num')
             ->where('discarded', '=', 0)
             ->where('f_keep', '=', 0)
-            ->hasFailures()
+            ->whereHas('failures', function($q) {
+                $q->whereNull('m_qty');
+            })
             ->select([
                 'id',
                 'figure_id',
@@ -319,6 +325,7 @@ class InspectionResultRepository
     {
         // $chokus = [$choku, 'NA'];
         $ir = InspectionResult::withFailures()
+            ->withPart()
             ->where('f_keep', '=', 0)
             ->where('m_keep', '=', 0)
             ->where('discarded', '=', 0)
@@ -401,4 +408,88 @@ class InspectionResultRepository
         ];
     }
 
+    public function listForReference($line, $vehicle, $part, $start, $end, $chokus, $judge, $failureTypes)
+    {
+        $irs = InspectionResult::withFailures()
+            ->where('f_keep', '=', 0)
+            ->where('m_keep', '=', 0)
+            ->where('discarded', '=', 0)
+            ->where('pt_pn', '=', $part)
+            ->where('inspected_at', '>=', $start)
+            ->where('inspected_at', '<', $end)
+            ->whereIn('inspected_choku', $chokus);
+
+        if (array_sum($judge) === 0) {
+            $irs = $irs->whereHas('failures', function($q) use($failureTypes) {
+                $q->whereIn('type_id', $failureTypes);
+            });
+        }
+
+        if ($line !== null) {
+            $irs = $irs->where('line_code', '=', $line);
+        }
+
+        if ($vehicle !== null) {
+            $irs = $irs->where('vehicle_code', '=', $vehicle);
+        }
+
+        $result_count = $irs->count();
+
+        $irs = $irs->select([
+            'id',
+            'line_code',
+            'vehicle_code',
+            'pt_pn',
+            'inspected_choku',
+            'modificated_choku',
+            'inspected_by',
+            'modificated_by',
+            'palet_num',
+            'f_comment',
+            'm_comment',
+            'inspected_at',
+            'modificated_at',
+            'ft_ids'
+        ])
+        ->take(100)
+        ->get();
+
+        $ft_ids = $irs->map(function($ir){
+            return unserialize($ir->ft_ids);
+        })
+        ->flatten()
+        ->unique();
+
+        $irs = $irs->map(function($ir){
+            return [
+                'l' => $ir->line_code,
+                'v' => $ir->vehicle_code,
+                'p' => $ir->pt_pn,
+                'iChoku' => $ir->inspected_choku,
+                'mChoku' => $ir->modificated_choku,
+                'iBy' => $ir->inspected_by,
+                'mBy' => $ir->modificated_by,
+                'pNum' => $ir->palet_num,
+                'fCom' => $ir->f_comment,
+                'mCom' => $ir->m_comment,
+                'iAt' => $ir->inspected_at->toDateTimeString(),
+                'mAt' => $ir->modificated_at->toDateTimeString(),
+                'pNum' => $ir->palet_num,
+                'f' => $ir->failures->map(function($f) {
+                    return [
+                        't' => $f->typeId,
+                        'fQ' => $f->fQty,
+                        'mQ' => $f->mQty,
+                        'r' => $f->responsibleFor
+                    ];
+                })
+            ];
+        });
+
+        return [
+            'result_count' => $result_count,
+            'ft_ids' => $ft_ids,
+            'irs' => $irs
+        ];
+    }
 }

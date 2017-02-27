@@ -62,6 +62,10 @@ Route::group(['prefix' => 'press/manager', 'namespace' => 'Press\Manager'], func
 
     Route::post('mapping', 'MappingController@getData');
 
+    Route::get('reference/failureTypes', 'ReferenceController@allfailureTypes');
+    Route::post('reference/search/inspection', 'ReferenceController@serchInspection');
+    Route::post('reference/search/memo', 'ReferenceController@serchMemo');
+
     Route::get('report/export/{line}/{date}/{choku}', 'ReportController@export');
 });
 

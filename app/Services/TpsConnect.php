@@ -10,7 +10,7 @@ class TpsConnect
     protected $port;
     protected $now;
     protected $postData;
-    protected $responceData;
+    protected $responseData;
 
     public function __construct() {
         $this->ip = config('socket.'.config('app.server_place').'.ip');
@@ -20,16 +20,18 @@ class TpsConnect
 
     public function putSocketDummy()
     {
-        $this->responceData = '3  16              14            14            3';
+        // $this->responseData = 'ANS16              14            14            3';
+        $this->responseData = 'ANS11222223333344444555556666677777888889999900000';
+
         return true;
     }
 
     public function putSocket()
     {
-        $responceData = null;
+        $response = null;
+        $responseData = null;
         $success = false;
         try{
-            var_dump($this->ip, $this->port);
             $fp = fsockopen($this->ip, $this->port);
 
             if ($fp) {
@@ -38,7 +40,7 @@ class TpsConnect
                 // Send socket request
                 fputs($fp, $this->postData);
 
-                // Get socket responce
+                // Get socket response
                 $response = fgets($fp);
 
                 // Check time out
@@ -46,8 +48,9 @@ class TpsConnect
                 if (!$meta['timed_out']) {
 
                     \Log::debug('response:', [$response]);
-                    $tpsResponce = $response;
+                    $tpsresponse = $response;
                     $success = true;
+
                 }
 
               // End socket connection
@@ -58,7 +61,7 @@ class TpsConnect
             \Log::debug('Fatal Error', [$this->ip, $this->port, $e]);
         }
 
-        $this->responceData = $responceData;
+        $this->responseData = $response;
         return $success;
     }
 
@@ -97,8 +100,8 @@ class TpsConnect
         return $postData;
     }
 
-    public function getResponceData()
+    public function getResponseData()
     {
-        return $this->responceData;
+        return $this->responseData;
     }
 }

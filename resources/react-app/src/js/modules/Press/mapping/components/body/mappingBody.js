@@ -2,6 +2,7 @@ import React, { PropTypes, Component } from 'react';
 // Styles
 import styles from './mappingBody.scss';
 // Components
+import Loading from '../../../../../components/loading/loading';
 
 class MappingBody extends Component {
   constructor(props, context) {
@@ -25,7 +26,7 @@ class MappingBody extends Component {
         return (
           <div className="failure">
             <div className="collection">
-              <div>
+              <div className="has-check-box">
                 <ul>
                   <li
                     onClick={() => {
@@ -58,10 +59,10 @@ class MappingBody extends Component {
                 </ul>
               </div>
               {
-                data.parts.map((p, i) =>
+                data.parts.map((p, i, self) =>
                   <div>
                     <ul className="parts">
-                      <li>{i == 0 ? 'L' : 'R'}</li>
+                      <li>{self.length === 1 ? '' : i == 0 ? 'L' : 'R'}</li>
                       {
                         data.failureTypes.map(ft => 
                           <li>
@@ -89,7 +90,7 @@ class MappingBody extends Component {
         return (
           <div className="responsibility">
             <div className="collection">
-              <div>
+              <div className="has-check-box">
                 <ul>
                   <li
                     onClick={() => {
@@ -122,10 +123,10 @@ class MappingBody extends Component {
                 </ul>
               </div>
               {
-                data.parts.map((p, i) =>
-                  <div>
+                data.parts.map((p, i, self) =>
+                  <div className="not-has-check-box">
                     <ul className="parts">
-                      <li>{i == 0 ? 'L' : 'R'}</li>
+                      <li>{self.length === 1 ? '' : i == 0 ? 'L' : 'R'}</li>
                       {
                         data.failureTypes.map(ft => 
                           <li>
@@ -147,7 +148,7 @@ class MappingBody extends Component {
                   </div>
                 )
               }
-              <div>
+              <div className="has-check-box">
                 <ul>
                   <li
                     onClick={() => {
@@ -180,10 +181,10 @@ class MappingBody extends Component {
                 </ul>
               </div>
               {
-                data.parts.map((p, i) =>
-                  <div>
+                data.parts.map((p, i, self) =>
+                  <div className="not-has-check-box">
                     <ul className="parts">
-                      <li>{i == 0 ? 'L' : 'R'}</li>
+                      <li>{self.length === 1 ? '' : i == 0 ? 'L' : 'R'}</li>
                       {
                         data.failureTypes.map(ft => 
                           <li>
@@ -205,7 +206,7 @@ class MappingBody extends Component {
                   </div>
                 )
               }
-              <div>
+              <div className="has-check-box">
                 <ul>
                   <li
                     onClick={() => {
@@ -238,10 +239,10 @@ class MappingBody extends Component {
                 </ul>
               </div>
               {
-                data.parts.map((p, i) =>
-                  <div>
+                data.parts.map((p, i, self) =>
+                  <div className="not-has-check-box">
                     <ul className="parts">
-                      <li>{i == 0 ? 'L' : 'R'}</li>
+                      <li>{self.length === 1 ? '' : i == 0 ? 'L' : 'R'}</li>
                       {
                         data.failureTypes.map(ft => 
                           <li>
@@ -274,7 +275,7 @@ class MappingBody extends Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { data, isFetching, didInvalidate, narrowedBy } = this.props;
     const { active, fFilter, fFilterK, fFilterS, fFilterZ } = this.state;
 
     return (
@@ -306,7 +307,7 @@ class MappingBody extends Component {
             </div>
             <svg>
               {
-                data.parts.map((part, i) =>
+                data.parts.map((part, i, self) =>
                   part.failures.filter(f =>
                     fFilter.indexOf(f.typeId) == -1
                   ).filter(f => {
@@ -327,7 +328,23 @@ class MappingBody extends Component {
                   }).map(f => {
                     return (
                       <g>
-                        <circle cx={f.x + 450*i} cy={f.y} r={5} fill="red" />
+                        <circle
+                          cx={f.x/2/(self.length) + 1030/(self.length)*i}
+                          cy={f.y/2/(self.length)}
+                          r={5}
+                          fill="red"
+                        />
+                        <text
+                          x={f.x/2/(self.length) + 1030/(self.length)*i}
+                          y={f.y/2/(self.length) - 10}
+                          dy="4"
+                          fontSize="10"
+                          fill="#000"
+                          textAnchor="middle"
+                          fontWeight="bold"
+                        >
+                          {f.fQty}
+                        </text>
                       </g>
                     );
                   // switch (f.c) {
@@ -363,13 +380,13 @@ class MappingBody extends Component {
                 className={active == 'f' ? '' : 'disable'}
                 onClick={() => this.setState({ active: 'f', fFilterK: [], fFilterS: [], fFilterZ: []})}
               >
-                工程内不良
+                自工程内不良
               </button>
               <button
                 className={active == 'res' ? '' : 'disable'}
                 onClick={() => this.setState({ active: 'res', fFilter: []})}
               >
-                工程内責任別
+                自工程内責任別
               </button>
               <button
                 className={active == 'ato' ? '' : 'disable'}
@@ -382,6 +399,19 @@ class MappingBody extends Component {
               {this.renderContent()}
             </div>
           </div>
+          {
+            isFetching && <Loading/>
+          }{
+            !isFetching && data.failureTypes.length == 0 && narrowedBy !== 'realtime' &&
+            <div className="cover">
+              <p>検査結果が見つかりませんでした</p>
+            </div>
+          }{
+            didInvalidate && narrowedBy !== 'realtime' &&
+            <div className="cover">
+              <p>検査結果が見つかりませんでした</p>
+            </div>
+          }
         </div>
       </div>
     );
@@ -390,7 +420,9 @@ class MappingBody extends Component {
 
 MappingBody.propTypes = {
   data: PropTypes.object.isRequired,
-  vehicles: PropTypes.array.isRequired
+  isFetching: PropTypes.bool.isRequired,
+  didInvalidate: PropTypes.bool.isRequired,
+  narrowedBy: PropTypes.string.isRequired
 };
 
 export default MappingBody;

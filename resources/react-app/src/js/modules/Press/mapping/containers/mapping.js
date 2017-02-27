@@ -30,12 +30,24 @@ class Mapping extends Component {
       narrowedBy: 'realtime',
       choku: {label: '白直', value: ['W']},
       startDate: moment(),
-      endDate: moment()
+      endDate: moment(),
+      intervalId: null,
+      interval: 10000,
     };
   }
 
   componentWillUnmount() {
-   clearInterval(this.state.intervalId); 
+    clearInterval(this.state.intervalId);
+    this.props.actions.clearMappingData();
+  }
+
+  startInterval() {    
+    const intervalId = setInterval(
+      () => this.requestMappingData(),
+      this.state.interval
+    );
+
+    this.setState({intervalId});
   }
 
   endInterval() {
@@ -62,7 +74,7 @@ class Mapping extends Component {
   }
 
   render() {
-    const { line, vehicle, part, narrowedBy, choku, startDate, endDate } = this.state;
+    const { line, vehicle, part, narrowedBy, choku, startDate, endDate, intervalId } = this.state;
     const { InitialData, MappingData, actions } = this.props;
 
     const lines = InitialData.lines.map(l => { return {label: l, value: l} });
@@ -74,6 +86,10 @@ class Mapping extends Component {
       return {
         label: c.p, value: c.p
       }
+    }).sort((a,b) => {
+      if(a.value < b.value) return -1;
+      if(a.value > b.value) return 1;
+      return 0;
     });
 
     return (
@@ -133,8 +149,7 @@ class Mapping extends Component {
                   options={[
                     {label: '白直', value: ['W']},
                     {label: '黄直', value: ['Y']},
-                    {label: '黒直', value: ['B'], disabled: true},
-                    {label: '全直', value: ['W', 'Y', 'B']}
+                    {label: '両直', value: ['W', 'Y']}
                   ]}
                   onChange={value => this.setState({choku: value})}
                 />
@@ -155,7 +170,14 @@ class Mapping extends Component {
           </div>
           <button
             className={`show ${part === null ? 'disabled' : ''}`}
-            onClick={() => this.requestMappingData()}
+            onClick={() => {
+              this.requestMappingData();
+              clearInterval(intervalId);
+
+              if (narrowedBy === 'realtime') {
+                this.startInterval();
+              }
+            }}
           >
             表示
           </button>
@@ -165,6 +187,8 @@ class Mapping extends Component {
           <MappingBody
             data={MappingData.data}
             isFetching={MappingData.isFetching}
+            didInvalidate={MappingData.didInvalidate}
+            narrowedBy={narrowedBy}
           />
         }
       </div>

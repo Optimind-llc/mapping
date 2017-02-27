@@ -81,12 +81,15 @@ class MemoController extends Controller
                 $keepingMemoArray = null;
             }
 
+            $pt = $this->partType->findByPn($c['p']);
 
             $result[] = [
                 'line' => $c['l'],
                 'vehicle' => $c['v'],
                 'part' => $c['p'],
-                'keepingMemo' => $keepingMemoArray
+                'keepingMemo' => $keepingMemoArray,
+                'capacity' => $pt->capacity,
+                'figure' => config('app.url').$pt->figures->first()['path']
             ];
         }
 
@@ -104,7 +107,16 @@ class MemoController extends Controller
     public function save(Request $request)
     {
         $pt_pn = $request->part;
-        $figure_id = $this->figure->onlyActive($pt_pn)->id;
+        $figure = $this->figure->onlyActive($pt_pn);
+
+        if (is_null($figure)) {
+            return \Response::json([
+                'status' => 1,
+                'message' => 'Figure not found',
+            ], 400);
+        }
+
+        $figure_id = $figure->id;
 
         $param = [
             'line_code' => $request->line,
@@ -116,7 +128,9 @@ class MemoController extends Controller
             'ft_ids' => $this->failureType->activeIds(),
             'created_choku' => $request->choku,
             'created_by' => $request->worker,
-            'created_iPad_id' => $request->iPadId
+            'created_iPad_id' => $request->iPadId,
+            'modificated_at' => $request->modificatedAt
+            // 'y/m/d'
         ];
 
         $fs = [];

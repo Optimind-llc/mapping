@@ -4,6 +4,7 @@ import { CALL_API } from '../../../../middleware/fetchMiddleware';
 export const REDUEST_MAPPING_DATA = 'REDUEST_MAPPING_DATA';
 export const REDUEST_MAPPING_DATA_SUCCESS = 'REDUEST_MAPPING_DATA_SUCCESS';
 export const REDUEST_MAPPING_DATA_FAIL = 'REDUEST_MAPPING_DATA_FAIL';
+export const CLEAR_MAPPING_DATA = 'CLEAR_MAPPING_DATA';
 
 const initialState = {
   data: null,
@@ -32,25 +33,17 @@ export default function reducer(state = initialState, action) {
         didInvalidate: true
       });
 
+    case CLEAR_MAPPING_DATA:
+      return Object.assign({}, state, {
+        data: null,
+        isFetching: false,
+        didInvalidate: false
+      });
+
     default:
       return state;
   }
 }
-
-// export function panelIdMapping(partT, itionG, itorG, panel) {
-//   return {
-//     [CALL_API]: {
-//       types: [
-//         REDUEST_MAPPING_DATA,
-//         REDUEST_MAPPING_DATA_SUCCESS,
-//         REDUEST_MAPPING_DATA_FAIL
-//       ],
-//       endpoint: `/show/mapping/panelId/${partT}/${itionG}/${itorG}/${panel}`,
-//       method: 'GET',
-//       body: null
-//     }
-//   };
-// }
 
 export function getMappingData(line, vehicle, part, narrowedBy, chokus = [], s = null, e = null) {
   return {
@@ -67,7 +60,13 @@ export function getMappingData(line, vehicle, part, narrowedBy, chokus = [], s =
   };
 }
 
+export function clearMappingData() {
+  return {
+    type: CLEAR_MAPPING_DATA
+  }
+}
+
 export const pageActions = {
-  // panelIdMapping,
-  getMappingData
+  getMappingData,
+  clearMappingData
 };

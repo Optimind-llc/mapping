@@ -36,7 +36,8 @@ class Memo extends Model
                     'x2',
                     'y2',
                     'palet_first as paletFirst',
-                    'palet_last as paletLast'
+                    'palet_last as paletLast',
+                    'created_at as modificatedAt'
                 ]);
             }
         ]);

@@ -14,7 +14,7 @@ class SearchButton extends Component {
   }
 
   render() {
-    const { active, searching } = this.props;
+    const { active, searching, onClick } = this.props;
 
     const disabled = !active || searching;
     let word = 'この条件で検索';
@@ -24,6 +24,7 @@ class SearchButton extends Component {
     return (
       <button
         className={`iconBtn search dark ${disabled ? 'disabled' : ''}`}
+        onClick={() => onClick()}
       >
         <img src={`/img/icon/${disabled ? 'search-g' : 'search-w'}.svg`}/>
         <p>{word}</p>

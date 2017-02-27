@@ -24,11 +24,10 @@ class CombinationRepository
 
     public function identifyVehicle($line_code, $pt_pn)
     {
-        $vehicle_code = Combination::where('line_code', '=', $line_code)
+        $combination = Combination::where('line_code', '=', $line_code)
             ->where('pt_pn', '=', $pt_pn)
-            ->first()
-            ->vehicle_code;
+            ->first();
 
-        return $vehicle_code;
+        return $combination;
     }
 }

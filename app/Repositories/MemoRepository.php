@@ -119,4 +119,72 @@ class MemoRepository
         return $memo;
     }
 
+    public function listForReference($line, $vehicle, $part, $start, $end)
+    {
+        $memos = Memo::withFailures()
+            ->with([
+                'partType' => function($q) {
+                    $q->select(['pn', 'capacity']);
+                }
+            ])
+            ->where('keep', '=', 0)
+            ->where('pt_pn', '=', $part)
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<', $end);
+
+        if ($line !== null) {
+            $memos = $memos->where('line_code', '=', $line);
+        }
+
+        if ($vehicle !== null) {
+            $memos = $memos->where('vehicle_code', '=', $vehicle);
+        }
+
+        $result_count = $memos->count();
+
+        $memos = $memos->select([
+            'id',
+            'line_code',
+            'vehicle_code',
+            'pt_pn',
+            'created_choku',
+            'created_by',
+            'created_at',
+            'comment',
+            'ft_ids'
+        ])
+        ->take(100)
+        ->get();
+
+        $ft_ids = $memos->map(function($memo){
+            return unserialize($memo->ft_ids);
+        })
+        ->flatten()
+        ->unique();
+
+        $memos = $memos->map(function($memo){
+            return [
+                'l' => $memo->line_code,
+                'v' => $memo->vehicle_code,
+                'p' => $memo->pt_pn,
+                'cBy' => $memo->created_by,
+                'com' => $memo->comment,
+                'cAt' => $memo->created_at->toDateTimeString(),
+                'cap' => $memo->partType->capacity,
+                'f' => $memo->failures->map(function($f) {
+                    return [
+                        't' => $f->typeId,
+                        'first' => $f->paletFirst,
+                        'last' => $f->paletFirst
+                    ];
+                })
+            ];
+        });
+
+        return [
+            'result_count' => $result_count,
+            'ft_ids' => $ft_ids,
+            'memos' => $memos
+        ];
+    }
 }
