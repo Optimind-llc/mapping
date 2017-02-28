@@ -21,6 +21,7 @@ class MemoFailureRepository
         $new->y2 = $param['y2'];
         $new->palet_first = $param['palet_first'];
         $new->palet_last = $param['palet_last'];
+        $new->modificated_at = $param['modificated_at'];
         $new->save();
 
         return $new;
@@ -28,13 +29,13 @@ class MemoFailureRepository
 
     public function update($id, $param)
     {
-        $f = MemoFailure::find($id);
-        $f->f_qty = $param['f_qty'];
-        $f->m_qty = $param['m_qty'];
-        $f->responsible_for = $param['responsible_for'];
-        $f->save();
+        $memoF = MemoFailure::find($id);
+        $memoF->palet_first = $param['palet_first'];
+        $memoF->palet_last = $param['palet_last'];
+        $memoF->modificated_at = $param['modificated_at'];
+        $memoF->save();
 
-        return $f;
+        return $memoF;
     }
 
     public function deleteByIds($ids)

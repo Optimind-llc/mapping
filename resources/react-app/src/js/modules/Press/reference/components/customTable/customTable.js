@@ -78,14 +78,14 @@ class CustomTable extends Component {
       paletNum: 80,
       status: 60,
       failure: 88,
-      comment: 77,
+      comment: 77
     };
 
     const failureTypes2 = failureTypes.reduce((pre, cur) => {
       return [...pre, cur, cur];
     }, []);
 
-    let tableWidth = colWidth.number + colWidth.vehicle + colWidth.pn + colWidth.name + colWidth.panelId + colWidth.choku + colWidth.By + colWidth.By + colWidth.status + colWidth.comment + colWidth.At + colWidth.At + 18;
+    let tableWidth = colWidth.number + colWidth.line + colWidth.vehicle + colWidth.pn + colWidth.paletNum + colWidth.choku + colWidth.By + colWidth.By + colWidth.status + colWidth.comment + colWidth.comment + colWidth.At + colWidth.At + colWidth.At + colWidth.At + 18;
     if (failureTypes.length > 0) {
       tableWidth = tableWidth + colWidth.failure*failureTypes.length;
     }
@@ -225,16 +225,20 @@ class CustomTable extends Component {
                       {r.f.filter(f => f.t === ft.id).map(f => f.fQ).reduce((a,b) => {return a+b}, 0)}
                     </td> :
                     <td style={{width: colWidth.failure/2}}>
-                      {r.f.filter(f => f.t === ft.id).map(f => f.mQ).reduce((a,b) => {return a+b}, 0)}
+                      {
+                        r.mAt ? 
+                        r.f.filter(f => f.t === ft.id).map(f => f.mQ).reduce((a,b) => {return a+b}, 0) :
+                        '-'
+                      } 
                     </td>
                   )
                 }
-                <th rowSpan="3" style={{width: colWidth.comment}}>{r.fCom ? r.fCom.slice(0,4)+'..' : ''}</th>
-                <th rowSpan="3" style={{width: colWidth.By}}>{r.mBy}</th>
-                <th rowSpan="3" style={{width: colWidth.comment}}>{r.mCom ? r.mCom.slice(0,4)+'..' : ''}</th>
-                <th rowSpan="3" style={{width: colWidth.At}}>{r.mAt}</th>
-                <th rowSpan="3" style={{width: colWidth.At}}>-</th>
-                <th rowSpan="3" style={{width: colWidth.At}}>-</th>
+                <td style={{width: colWidth.comment}}>{r.fCom ? r.fCom.slice(0,4)+'..' : ''}</td>
+                <td style={{width: colWidth.By}}>{r.mBy}</td>
+                <td style={{width: colWidth.comment}}>{r.mCom ? r.mCom.slice(0,4)+'..' : ''}</td>
+                <td style={{width: colWidth.At}}>{r.mAt}</td>
+                <td style={{width: colWidth.At}}>-</td>
+                <td style={{width: colWidth.At}}>-</td>
               </tr>
             )
           }

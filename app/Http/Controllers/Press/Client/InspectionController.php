@@ -194,8 +194,6 @@ class InspectionController extends Controller
             ], 400);
         }
 
-
-
         $figure_id = $this->figure->onlyActive($pt_pn)->id;
 
         $processed_at_string = substr($QRcode, 82, 14);
@@ -336,6 +334,11 @@ class InspectionController extends Controller
 
     public function update(Request $request)
     {
+        $controlNum = $request->controlNum;
+        if ($controlNum === 0) {
+            $controlNum = null;
+        }
+
         $param = [
             'status' => $request->status,
             'discarded' => $request->discarded,
@@ -343,6 +346,7 @@ class InspectionController extends Controller
             'updated_by' => $request->worker,
             'f_comment' => $request->commentInF,
             'm_comment' => $request->commentInM,
+            'control_num' => $controlNum,
             'updated_iPad_id' => $request->iPadId,
             'ft_ids' => $this->failureType->activeIds()
         ];
@@ -385,16 +389,6 @@ class InspectionController extends Controller
             'message' => 'clear control number succeeded'
         ];
     }
-
-
-
-
-
-
-
-
-
-
 
     public function delete(Request $request)
     {

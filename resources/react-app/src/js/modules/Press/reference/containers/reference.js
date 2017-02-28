@@ -62,7 +62,7 @@ class Reference extends Component {
 
     searchResult(
       line === null ? line : line.value,
-      vehicle === null ? line : vehicle.value,
+      vehicle === null ? vehicle : vehicle.value,
       part.value,
       judgement.value,
       hasFailures.map(f => f.value),
@@ -197,16 +197,19 @@ class Reference extends Component {
         </div>
         <div className="result-wrap bg-white">
           {
-            !SearcheResult &&
-            <p>検索中...</p>
+            SearcheResult.isFetching &&
+            <p className="center-message">検索中...</p>
           }{
-            SearcheResult.data != null &&
+            SearcheResult.data != null &&　SearcheResult.data.result_count > 0 &&
             <CustomTable
               count={SearcheResult.data.result_count}
               failureTypes={SearcheResult.data.failureTypes}
               result={SearcheResult.data.result}
               download={() => handleDownload(table)}
             />
+          }{
+            !SearcheResult.isFetching && SearcheResult.data != null &&　SearcheResult.data.result_count === 0 &&
+            <p className="center-message">検索結果なし</p>
           }
         </div>
       </div>

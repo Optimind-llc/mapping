@@ -22,6 +22,46 @@ class MemoRepository
         $this->failure = $memoFailure;
     }
 
+    protected function createFailures($memo_id, $figure_id, $fs)
+    {
+        foreach ($fs as $f) {
+            $m_qty = array_key_exists('mQty', $f) ? $f['mQty'] : null;
+
+            $param = [
+                'type_id' => $f['typeId'],
+                'memo_id' => $memo_id,
+                'figure_id' => $figure_id,
+                'x1' => $f['x1'],
+                'y1' => $f['y1'],
+                'x2' => $f['x2'],
+                'y2' => $f['y2'],
+                'palet_first' => $f['paletFirst'],
+                'palet_last' =>  $f['paletLast'],
+                'modificated_at' => Carbon::createFromFormat('Y/m/d', $f['modificatedAt'])
+            ];
+
+            $this->failure->create($param);
+        }
+    }
+
+    protected function updateFailures($ufs)
+    {
+        foreach ($ufs as $uf) {
+            $param = [
+                'palet_first' => $uf['paletFirst'],
+                'palet_last' => $uf['paletLast'],
+                'modificated_at' => $uf['modificatedAt']
+            ];
+
+            $update = $this->failure->update($uf['failureId'], $param);
+        }
+    }
+
+    protected function deleteFailures($dfs)
+    {
+        return $this->failure->deleteByIds($dfs);
+    }
+
     public function isKeeping($line_code, $vehicle_code, $pt_pn)
     {
         $memo = Memo::withPair()
@@ -48,27 +88,6 @@ class MemoRepository
         return $memo;
     }
 
-    protected function createFailures($memo_id, $figure_id, $fs)
-    {
-        foreach ($fs as $f) {
-            $m_qty = array_key_exists('mQty', $f) ? $f['mQty'] : null;
-
-            $param = [
-                'type_id' => $f['typeId'],
-                'memo_id' => $memo_id,
-                'figure_id' => $figure_id,
-                'x1' => $f['x1'],
-                'y1' => $f['y1'],
-                'x2' => $f['x2'],
-                'y2' => $f['y2'],
-                'palet_first' => $f['paletFirst'],
-                'palet_last' =>  $f['paletLast'],
-            ];
-
-            $this->failure->create($param);
-        }
-    }
-
     public function create($param, $fs)
     {
         $new = new Memo;
@@ -92,6 +111,41 @@ class MemoRepository
         }
 
         return $new;
+    }
+
+    public function update($id, $param, $fs, $mfs, $dfs)
+    {
+        $memo = Memo::find($id);
+        if ($memo === null) {
+            return false;
+        }
+
+        $ft_ids = array_unique(array_merge($param['ft_ids']->toArray(), unserialize($memo->ft_ids)));
+
+        $memo->keep = $param['keep'];
+        $memo->comment = $param['comment'];
+        $memo->updated_choku = $param['updated_choku'];
+        $memo->updated_by = $param['updated_by'];
+        $memo->updated_iPad_id = $param['updated_iPad_id'];
+        $memo->save();
+
+        // Create failures
+        if (count($fs) !== 0) {
+            $this->createFailures($id, $memo->figure_id, $fs);
+        }
+
+        // Update failures
+        if (count($mfs) !== 0) {
+            $this->updateFailures($mfs);
+        }
+
+        // Delete failures
+        if (count($dfs) !== 0) {
+            $this->deleteFailures($dfs);
+        }
+
+        return $memo;
+
     }
 
     public function getHistory($orderBy, $skip, $take)

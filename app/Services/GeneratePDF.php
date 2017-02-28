@@ -89,11 +89,14 @@ class GeneratePDF
         ->groupBy('typeId')
         ->map(function($ft) {
             return $ft->map(function($f) {
-                return $f->fQty;
+                if ($f->mQty) {
+                    return $f->mQty;
+                }
+                else {
+                    return $f->fQty;
+                }
             })->sum();
         });
-
-        // $allFailuresSum = $allFailures->sum();
 
         $cellWidth = 9;
         $cellHeight = 4;
@@ -152,7 +155,8 @@ class GeneratePDF
         $d1 = [4, 7, 14, 7, 12, 9, 12];
         $d2 = [10, 14, 14, 10, 14, 10, 10];
 
-        $grouped = $irs->groupBy('vehicle_code');
+        // $grouped = $irs->groupBy('vehicle_code');
+        $grouped = $irs->groupBy('pt_pn');
 
         $block = 0;
         foreach ($grouped as $vehicle_code => $irs) {
@@ -207,7 +211,12 @@ class GeneratePDF
                         ->groupBy('typeId')
                         ->map(function($ft) {
                             return $ft->map(function($f) {
-                                return $f->fQty;
+                                if ($f->mQty) {
+                                    return $f->mQty;
+                                }
+                                else {
+                                    return $f->fQty;
+                                }
                             })->sum();
                         });
 
@@ -231,8 +240,8 @@ class GeneratePDF
                     if ($ir->m_comment) {
                         $mComment = mb_substr($ir->m_comment, 0, 4, 'UTF-8').'..';
                     }
+
                     $inspectedAt = $ir->inspected_at->format('m/d H:i');
-                    // $processedAt = $ir->processed_at->format('m/d H:i');
 
                     $modificatedAt = '-';
                     if ($ir->modificated_at) {
@@ -261,7 +270,12 @@ class GeneratePDF
                 ->groupBy('typeId')
                 ->map(function($ft) {
                     return $ft->map(function($f) {
-                        return $f->fQty;
+                        if ($f->mQty) {
+                            return $f->mQty;
+                        }
+                        else {
+                            return $f->fQty;
+                        }
                     })->sum();
                 });
 
@@ -278,26 +292,16 @@ class GeneratePDF
                         $failure_sum = $all_failures[$ft['id']];
                     }
 
-                    $parcent = number_format($failure_sum/$all_failures_sum*100, 1).' %';
+                    $parcent = 0;
+                    if ($all_failures_sum !== 0) {
+                        $parcent = number_format($failure_sum/$all_failures_sum*100, 1).' %';
+                    }
 
                     $tcpdf->MultiCell($cellWidth, $cellHeight, $failure_sum, 0, 'C', 0, 1, $A3['x0'] + array_sum($d1) + ($col-1)*$cellWidth, $A3['y2']+($row-1)*$cellHeight);
                     $col = $col+1;
                 }
 
             $row = $row+1;
-                // $all_failures = $irs->map(function($ir) {
-                //     return $ir->failures;
-                // })
-                // ->flatten()
-                // ->groupBy('typeId')
-                // ->map(function($ft) {
-                //     return $ft->map(function($f) {
-                //         return $f->fQty;
-                //     })->sum();
-                // });
-
-                // $all_failures_sum = $all_failures->sum();
-
                 $tcpdf->MultiCell($d1[6], $cellHeight, '不良率', 0, 'C', 0, 1, $A3['x0']+array_sum(array_slice($d1,0,6)), $A3['y2']+($row-1)*$cellHeight);
 
                 $col = 1;
@@ -315,8 +319,6 @@ class GeneratePDF
 
             $block = $row+3;
         }
-
-
 
         return $tcpdf;
     }

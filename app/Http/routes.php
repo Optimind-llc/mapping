@@ -40,6 +40,7 @@ Route::group(['prefix' => 'press', 'namespace' => 'Press'], function () {
 // Return React App
 Route::group(['prefix' => 'press'], function () {
     Route::group(['prefix' => 'manager'], function () {
+        Route::get('dashboard-test', 'PagesController@index');
         Route::get('dashboard', 'PagesController@index');
         Route::get('mapping', 'PagesController@index');
         Route::get('reference', 'PagesController@index');

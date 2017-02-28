@@ -11,8 +11,11 @@ class VehicleRepository
 {
     public function onlyActive()
     {
-        return Vehicle::onlyActive()->get()->map(function($v) {
-        	return $v->code;
-        });
+        return Vehicle::onlyActive()
+        	->orderBy('sort')
+        	->get()
+        	->map(function($v) {
+	        	return $v->code;
+	        });
     }
 }

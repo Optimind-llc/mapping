@@ -20,7 +20,8 @@ class Root extends Component {
         <Router history={history}>
           <Route name="press" path="press" component={App}>
             <Route path="manager">
-              <Route name="ダッシュボード" path="dashboard" component={PressDashboard}/>
+              <Route name="ダッシュボード" path="dashboard-test" component={PressDashboard}/>
+              <Route name="ダッシュボード" path="dashboard" component={PressMapping}/>
               <Route name="マッピング" path="mapping" component={PressMapping}/>
               <Route name="検査結果検索" path="reference" component={PressReference}/>
               <Route name="直レポート" path="report" component={PressReport}/>

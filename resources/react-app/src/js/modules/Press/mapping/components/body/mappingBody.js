@@ -71,7 +71,7 @@ class MappingBody extends Component {
                               p.failures.filter(f =>
                                 f.typeId == ft.id
                               ).map(f =>
-                                f.fQty
+                                f.mQty ? f.mQty: f.fQty
                               ).reduce((prev, current, i, arr) => {
                                 return prev+current;
                               }, 0)
@@ -136,7 +136,7 @@ class MappingBody extends Component {
                               ).filter(f =>
                                 f.typeId == ft.id
                               ).map(f =>
-                                f.fQty
+                                f.mQty ? f.mQty: f.fQty
                               ).reduce((prev, current, i, arr) => {
                                 return prev+current;
                               }, 0)
@@ -194,7 +194,7 @@ class MappingBody extends Component {
                               ).filter(f =>
                                 f.typeId == ft.id
                               ).map(f =>
-                                f.fQty
+                                f.mQty ? f.mQty: f.fQty
                               ).reduce((prev, current, i, arr) => {
                                 return prev+current;
                               }, 0)
@@ -252,7 +252,7 @@ class MappingBody extends Component {
                               ).filter(f =>
                                 f.typeId == ft.id
                               ).map(f =>
-                                f.fQty
+                                f.mQty ? f.mQty: f.fQty
                               ).reduce((prev, current, i, arr) => {
                                 return prev+current;
                               }, 0)
@@ -299,14 +299,15 @@ class MappingBody extends Component {
             <div className="figure">
               {
                 data.parts.length == 1 ?
-                <img width="870" height="450" src={data.parts[0].figure}/> :
+                <img width="870" height="515" src={data.parts[0].figure}/> :
                 data.parts.map(pt =>
-                  <img width="435" height="450" src={pt.figure}/>
+                  <img width="435" height="515" src={pt.figure}/>
                 )
               }
             </div>
             <svg>
               {
+                active !== 'ato' &&
                 data.parts.map((part, i, self) =>
                   part.failures.filter(f =>
                     fFilter.indexOf(f.typeId) == -1
@@ -343,7 +344,7 @@ class MappingBody extends Component {
                           textAnchor="middle"
                           fontWeight="bold"
                         >
-                          {f.fQty}
+                          {f.mQty ? f.mQty : f.fQty}
                         </text>
                       </g>
                     );

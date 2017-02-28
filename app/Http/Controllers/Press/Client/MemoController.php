@@ -128,9 +128,7 @@ class MemoController extends Controller
             'ft_ids' => $this->failureType->activeIds(),
             'created_choku' => $request->choku,
             'created_by' => $request->worker,
-            'created_iPad_id' => $request->iPadId,
-            'modificated_at' => $request->modificatedAt
-            // 'y/m/d'
+            'created_iPad_id' => $request->iPadId
         ];
 
         $fs = [];
@@ -175,5 +173,52 @@ class MemoController extends Controller
         });
 
         return $memos;
+    }
+
+    public function update(Request $request)
+    {
+        $id = $request->id;
+        $param = [
+            'keep' => $request->keep,
+            'comment' => $request->comment,
+            'updated_choku' => $request->choku,
+            'updated_by' => $request->worker,
+            'updated_iPad_id' => $request->iPadId,
+            'ft_ids' => $this->failureType->activeIds()
+        ];
+
+        $fs = [];
+        if ($request->failures) {
+            $fs = $request->failures;
+        }
+
+        $ufs = [];
+        if ($request->updatedFailures) {
+            $ufs = $request->updatedFailures;
+        }
+
+        $dfs = [];
+        if ($request->deletedFailures) {
+            $dfs = $request->deletedFailures;
+        }
+
+        DB::connection('press')->beginTransaction();
+        if ($this->memo->update($request->memoId, $param, $fs, $ufs, $dfs)) {
+            DB::connection('press')->commit();
+            return [
+                'status' => 1,
+                'message' => 'Update memo succeeded'
+            ];
+        } else {
+            DB::connection('press')->rollBack();
+            return \Response::json([
+                'status' => 0,
+                'message' => 'Update mamo failed',
+                'error' => [
+                    'status' => 100,
+                    'message' => ''
+                ]
+            ], 400);
+        }
     }
 }

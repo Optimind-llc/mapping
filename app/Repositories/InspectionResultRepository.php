@@ -50,9 +50,14 @@ class InspectionResultRepository
     protected function updateFailures($mfs)
     {
         foreach ($mfs as $mf) {
+            $m_qty = array_key_exists('mQty', $mf) ? $mf['mQty'] : null;
+            if ($m_qty == -1) {
+                $m_qty = null;
+            }
+
             $param = [
                 'f_qty' => $mf['fQty'],
-                'm_qty' => $mf['mQty'],
+                'm_qty' => $m_qty,
                 'responsible_for' => $mf['responsibleFor']
             ];
 
@@ -153,7 +158,7 @@ class InspectionResultRepository
         $ir = InspectionResult::withFigure()
             ->withFailures()
             ->withPair()
-            ->whereNotNull('control_num')
+            // ->whereNotNull('control_num')
             ->where('discarded', '=', 0)
             ->where('f_keep', '=', 0)
             ->whereHas('failures', function($q) {
@@ -186,6 +191,10 @@ class InspectionResultRepository
     public function updateByModification($id, $param, $fs, $mfs)
     {
         $ir = InspectionResult::find($id);
+        if ($ir === null) {
+            return false;
+        }
+
         $ft_ids = array_unique(array_merge($param['ft_ids']->toArray(), unserialize($ir->ft_ids)));
 
         $ir->status = $param['status'];
@@ -196,7 +205,6 @@ class InspectionResultRepository
         $ir->m_comment = $param['m_comment'];
         $ir->modificated_iPad_id = $param['modificated_iPad_id'];
         $ir->modificated_at = $this->now;
-        $ir->updated_at = $this->now;
         $ir->save();
 
         // Create failures
@@ -214,7 +222,12 @@ class InspectionResultRepository
 
     public function update($id, $param, $fs, $mfs, $dfs)
     {
+        $now = Carbon::now();
         $ir = InspectionResult::find($id);
+        if ($ir === null) {
+            return false;
+        }
+
         $ft_ids = array_unique(array_merge($param['ft_ids']->toArray(), unserialize($ir->ft_ids)));
 
         $ir->status = $param['status'];
@@ -224,8 +237,8 @@ class InspectionResultRepository
         $ir->updated_by = $param['updated_by'];
         $ir->f_comment = $param['f_comment'];
         $ir->m_comment = $param['m_comment'];
+        $ir->control_num = $param['control_num'];
         $ir->updated_iPad_id = $param['updated_iPad_id'];
-        $ir->updated_at = $this->now;
         $ir->save();
 
         // Create failures
@@ -290,10 +303,6 @@ class InspectionResultRepository
         return true;
     }
 
-
-
-
-
     public function findByCN($controlNum)
     {
         return InspectionResult::where('control_num', '=', $controlNum)->first();
@@ -350,6 +359,7 @@ class InspectionResultRepository
                 'modificated_at',
                 'ft_ids',
             ])
+            ->orderBy('inspected_at')
             ->get();
 
         return $ir;
@@ -461,6 +471,10 @@ class InspectionResultRepository
         ->unique();
 
         $irs = $irs->map(function($ir){
+            $mAt = '';
+            if ($ir->modificated_at !== null) {
+                $mAt = $ir->modificated_at->toDateTimeString();
+            }
             return [
                 'l' => $ir->line_code,
                 'v' => $ir->vehicle_code,
@@ -473,7 +487,7 @@ class InspectionResultRepository
                 'fCom' => $ir->f_comment,
                 'mCom' => $ir->m_comment,
                 'iAt' => $ir->inspected_at->toDateTimeString(),
-                'mAt' => $ir->modificated_at->toDateTimeString(),
+                'mAt' => $mAt,
                 'pNum' => $ir->palet_num,
                 'f' => $ir->failures->map(function($f) {
                     return [

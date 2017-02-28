@@ -37,7 +37,7 @@ class Memo extends Model
                     'y2',
                     'palet_first as paletFirst',
                     'palet_last as paletLast',
-                    'created_at as modificatedAt'
+                    'modificated_at as modificatedAt'
                 ]);
             }
         ]);
