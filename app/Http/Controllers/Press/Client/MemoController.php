@@ -16,6 +16,7 @@ use App\Repositories\LineRepository;
 use App\Repositories\CombinationRepository;
 use App\Repositories\PartTypeRepository;
 use App\Repositories\MemoRepository;
+use App\Repositories\VehicleRepository;
 // Exceptions
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -32,6 +33,7 @@ class MemoController extends Controller
     protected $combination;
     protected $partType;
     protected $memo;
+    protected $vehicle;
 
     public function __construct (
         WorkerRepository $worker,
@@ -40,7 +42,8 @@ class MemoController extends Controller
         LineRepository $line,
         CombinationRepository $combination,
         PartTypeRepository $partType,
-        MemoRepository $memo
+        MemoRepository $memo,
+        VehicleRepository $vehicle
     )
     {
         $this->worker = $worker;
@@ -50,6 +53,51 @@ class MemoController extends Controller
         $this->combination = $combination;
         $this->partType = $partType;
         $this->memo = $memo;
+        $this->vehicle = $vehicle;
+    }
+
+    public function listOld(Request $request)
+    {
+        $combinations = $this->combination->onlyActive()->toArray();
+
+        $result = [];
+        foreach ($combinations as $c) {
+            $keepingMemo = $this->memo->isKeeping($c['l'], $c['v'], $c['p']);
+
+            if ($keepingMemo !== null) {
+                $keepingMemoArray = $keepingMemo->toArray();
+
+                $figure = $keepingMemo['figure'];
+                $keepingMemoArray['figure'] = config('app.url').$figure['path'];
+
+                $keepingMemoArray['part'] = $keepingMemo['pt_pn'];
+                unset($keepingMemoArray['pt_pn']);
+
+                $keepingMemoArray['capacity'] = $keepingMemo['partType']['capacity'];
+
+                $keepingMemoArray['hasPair'] = false;
+                if ($keepingMemo['partType']['left_pair'] !== null || $keepingMemo['partType']['right_pair'] !== null) {
+                    $keepingMemoArray['hasPair'] = true;
+                }
+                unset($keepingMemoArray['part_type']);
+            }
+            else {
+                $keepingMemoArray = null;
+            }
+
+            $pt = $this->partType->findByPn($c['p']);
+
+            $result[] = [
+                'line' => $c['l'],
+                'vehicle' => $c['v'],
+                'part' => $c['p'],
+                'keepingMemo' => $keepingMemoArray,
+                'capacity' => $pt->capacity,
+                'figure' => config('app.url').$pt->figures->first()['path']
+            ];
+        }
+
+        return $result;
     }
 
     public function list(Request $request)
@@ -93,7 +141,10 @@ class MemoController extends Controller
             ];
         }
 
-        return $result;
+        return [
+            'vehicle' => $this->vehicle->onlyActive(),
+            'result' => $result
+        ];
     }
 
     public function initial(Request $request)

@@ -27,12 +27,17 @@ Route::group(['prefix' => 'press', 'namespace' => 'Press'], function () {
         });
 
         Route::group(['prefix' => 'memo'], function () {
+            Route::get('list-old', 'MemoController@listOld');
             Route::get('list', 'MemoController@list');
             Route::post('initial', 'MemoController@initial');
             Route::post('save', 'MemoController@save');
 
             Route::post('history', 'MemoController@history');
             Route::post('update', 'MemoController@update');
+        });
+
+        Route::group(['prefix' => 'print'], function () {
+            Route::post('upload', 'PrintController@saveImg');
         });
     });
 });

@@ -265,6 +265,9 @@ class InspectionController extends Controller
             }
             unset($irArray['part_type']);
 
+            $irArray['fKeep'] = $irArray['f_keep'];
+            $irArray['mKeep'] = $irArray['m_keep'];
+
             return $irArray;
         });
 

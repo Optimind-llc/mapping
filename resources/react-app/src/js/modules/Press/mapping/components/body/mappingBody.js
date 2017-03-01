@@ -296,15 +296,34 @@ class MappingBody extends Component {
             </div>
           </div>*/}
           <div className="figure-wrap">
-            <div className="figure">
+            <div>
               {
-                data.parts.length == 1 ?
-                <img width="870" height="515" src={data.parts[0].figure}/> :
-                data.parts.map(pt =>
-                  <img width="435" height="515" src={pt.figure}/>
+                data.parts.map((pt, i, self) =>
+                  <div
+                    style={{
+                      position: 'relative',
+                      float: 'left',
+                      width: 846/self.length,
+                      height: 520,
+                      backgroundImage: `url(${pt.figure})`,
+                      backgroundSize: 'contain',
+                      backgroundPosition: 'center center',
+                      backgroundRepeat: 'no-repeat'
+                    }}
+                  >
+                  </div>
                 )
               }
             </div>
+            {/*<div className="figure">
+              {
+                data.parts.length == 1 ?
+                <img width="846" height="520" src={data.parts[0].figure}/> :
+                data.parts.map(pt =>
+                  <img width="423" height="520" src={pt.figure}/>
+                )
+              }
+            </div>*/}
             <svg>
               {
                 active !== 'ato' &&
@@ -330,14 +349,14 @@ class MappingBody extends Component {
                     return (
                       <g>
                         <circle
-                          cx={f.x/2/(self.length) + 1030/(self.length)*i}
-                          cy={f.y/2/(self.length)}
+                          cx={f.x + 846/(self.length)*i}
+                          cy={f.y}
                           r={5}
                           fill="red"
                         />
                         <text
-                          x={f.x/2/(self.length) + 1030/(self.length)*i}
-                          y={f.y/2/(self.length) - 10}
+                          x={f.x + 846/(self.length)*i}
+                          y={f.y - 10}
                           dy="4"
                           fontSize="10"
                           fill="#000"

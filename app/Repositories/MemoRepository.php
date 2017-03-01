@@ -153,6 +153,7 @@ class MemoRepository
         $memo = Memo::withPair()
             ->withFigure()
             ->withFailures()
+            ->where('keep', '=', 0)
             ->select([
                 'id',
                 'figure_id',

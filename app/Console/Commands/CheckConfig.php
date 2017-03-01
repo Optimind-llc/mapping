@@ -8,21 +8,21 @@ use Carbon\Carbon;
 // Models
 use App\Models\Vehicle950A\InspectionResult;
 
-class ExportCSV extends Command
+class CheckConfig extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'exportCSV';
+    protected $signature = 'checkConfig';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'export csv file for 950A';
+    protected $description = 'check configs';
 
     /**
      * Create a new command instance.
@@ -41,14 +41,10 @@ class ExportCSV extends Command
      */
     public function handle()
     {
-        $ir = InspectionResult::where('inspection_en', '!=', 'inline')
-            ->whereColumn('exported_at', '<', 'updated_at')
-            ->get(['id'])
-            ->map(function($ir) {
-                return $ir->id;
-            })
-            ->toArray();
+        $TPS_ip = config('socket.'.config('app.server_place').'.ip');
+        $TPS_port = config('socket.'.config('app.server_place').'.port');
 
-        $this->info('ok');
+        $this->info('TPS IP: '.$TPS_ip);
+        $this->info('TPS port: '.$TPS_port);
     }
 }

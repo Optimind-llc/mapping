@@ -158,11 +158,14 @@ class InspectionResultRepository
         $ir = InspectionResult::withFigure()
             ->withFailures()
             ->withPair()
-            // ->whereNotNull('control_num')
-            ->where('discarded', '=', 0)
-            ->where('f_keep', '=', 0)
-            ->whereHas('failures', function($q) {
-                $q->whereNull('m_qty');
+            ->where('m_keep', '=', 1)
+            ->orWhere(function ($query) {
+                $query->where('discarded', '=', 0)
+                    ->where('f_keep', '=', 0)
+                    // ->whereNotNull('control_num')
+                    ->whereHas('failures', function($q) {
+                        $q->whereNull('m_qty');
+                    });
             })
             ->select([
                 'id',
@@ -170,7 +173,8 @@ class InspectionResultRepository
                 'line_code as line',
                 'vehicle_code as vehicle',
                 'pt_pn',
-                'f_keep as keep',
+                'f_keep',
+                'm_keep',
                 'discarded',
                 'inspected_choku as choku',
                 'inspected_by as worker',
@@ -267,14 +271,16 @@ class InspectionResultRepository
             // ->whereNotNull('control_num')
             ->whereNotNull('modificated_at')
             // ->where('discarded', '=', 0)
-            // ->where('f_keep', '=', 0)
+            ->where('f_keep', '=', 0)
+            ->where('m_keep', '=', 0)
             ->select([
                 'id',
                 'figure_id',
                 'line_code as line',
                 'vehicle_code as vehicle',
                 'pt_pn',
-                'f_keep as keep',
+                'f_keep',
+                'm_keep',
                 'discarded',
                 'inspected_choku as choku',
                 'inspected_by as worker',

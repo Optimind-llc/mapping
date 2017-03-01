@@ -7,9 +7,10 @@
     position: relative;
     display: flex;
     flex-flow: row nowrap;
-    align-items: center;
+    // align-items: center;
     background-color: #FFF;
     border-radius: 4px;
+    padding: 4px;
 
     .color-label {
       position: absolute;
@@ -62,29 +63,21 @@
       position: relative;
       flex-grow: 0;
 
-      .figure {
-        img {
-          display: block;
-          z-index: 1000;
-          float: left;
-        }
-      }
-
       svg {
         position: absolute;
         top: 0;
         left: 0;
-        width: 870px;
-        height: 515px;
+        width: 846px;
+        height: 520px;
       }
     }
 
     .control-panel {
       flex-basis: 290px;
       flex-grow: 1;
-      min-height: 540px;
+      min-height: 520px;
       min-width: 210px;
-      margin: 6px 4px 6px 0;
+      margin: 0 0 0 4px;
 
       .control-tab {
         display: flex;
@@ -113,7 +106,7 @@
         }
       }
       .control-content {
-        height: 500px;
+        height: 480px;
         background-color: #FFF;
         border: 2px solid #BFBFBF;
         border-radius: 0 0 4px 4px;
