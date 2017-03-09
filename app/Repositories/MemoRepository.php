@@ -77,6 +77,7 @@ class MemoRepository
                 'line_code as line',
                 'vehicle_code as vehicle',
                 'pt_pn',
+                'discarded',
                 'keep',
                 'comment',
                 'created_choku as choku',
@@ -94,6 +95,7 @@ class MemoRepository
         $new->line_code = $param['line_code'];
         $new->vehicle_code = $param['vehicle_code'];
         $new->pt_pn = $param['pt_pn'];
+        $new->discarded = $param['discarded'];
         $new->figure_id = $param['figure_id'];
         $new->keep = $param['keep'];
         $new->comment = $param['comment'];
@@ -122,6 +124,7 @@ class MemoRepository
 
         $ft_ids = array_unique(array_merge($param['ft_ids']->toArray(), unserialize($memo->ft_ids)));
 
+        $memo->discarded = $param['discarded'];
         $memo->keep = $param['keep'];
         $memo->comment = $param['comment'];
         $memo->updated_choku = $param['updated_choku'];
@@ -145,7 +148,6 @@ class MemoRepository
         }
 
         return $memo;
-
     }
 
     public function getHistory($orderBy, $skip, $take)
@@ -160,6 +162,7 @@ class MemoRepository
                 'line_code as line',
                 'vehicle_code as vehicle',
                 'pt_pn',
+                'discarded',
                 'keep',
                 'comment',
                 'created_choku as choku',
@@ -183,6 +186,7 @@ class MemoRepository
                 }
             ])
             ->where('keep', '=', 0)
+            ->where('discarded', '=', 0)
             ->where('pt_pn', '=', $part)
             ->where('created_at', '>=', $start)
             ->where('created_at', '<', $end);

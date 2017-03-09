@@ -67,14 +67,15 @@ class MappingBody extends Component {
                         data.failureTypes.map(ft => 
                           <li>
                             {
-
                               p.failures.filter(f =>
                                 f.typeId == ft.id
                               ).map(f =>
                                 f.mQty ? f.mQty: f.fQty
                               ).reduce((prev, current, i, arr) => {
                                 return prev+current;
-                              }, 0)
+                              }, 0) + ' (' + p.failures.filter(f =>
+                                f.typeId == ft.id
+                              ).length + ')'
                             }
                           </li>
                         )
@@ -363,7 +364,7 @@ class MappingBody extends Component {
                           textAnchor="middle"
                           fontWeight="bold"
                         >
-                          {f.mQty ? f.mQty : f.fQty}
+                          {/*f.mQty ? f.mQty : f.fQty*/}
                         </text>
                       </g>
                     );

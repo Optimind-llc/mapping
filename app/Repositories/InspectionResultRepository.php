@@ -138,11 +138,10 @@ class InspectionResultRepository
         $new->f_comment = $param['f_comment'];
         $new->ft_ids = serialize($param['ft_ids']->toArray());
         $new->processed_at = $param['processed_at'];
-        $new->inspected_at = $this->now;
+        $new->inspected_at = $param['inspected_at'];
         $new->control_num = $param['control_num'];
         $new->inspected_iPad_id = $param['inspected_iPad_id'];
-        $new->created_at = $this->now;
-        $new->updated_at = $this->now;
+        $new->created_at = $param['inspected_at'];
         $new->save();
 
         // Create failures
@@ -162,7 +161,6 @@ class InspectionResultRepository
             ->orWhere(function ($query) {
                 $query->where('discarded', '=', 0)
                     ->where('f_keep', '=', 0)
-                    // ->whereNotNull('control_num')
                     ->whereHas('failures', function($q) {
                         $q->whereNull('m_qty');
                     });
@@ -176,11 +174,15 @@ class InspectionResultRepository
                 'f_keep',
                 'm_keep',
                 'discarded',
-                'inspected_choku as choku',
-                'inspected_by as worker',
+                'inspected_choku as fChoku',
+                'inspected_by as fWorker',
+                'modificated_choku as mChoku',
+                'modificated_by as mWorker',
+                'updated_by as uWorker',
                 'palet_num as paletNum',
                 'palet_max as paletMax',
-                'f_comment as comment',
+                'f_comment as fComment',
+                'm_comment as mComment',
                 'processed_at as processedAt',
                 'inspected_at as inspectedAt',
                 'modificated_at as modificatedAt',
@@ -203,6 +205,7 @@ class InspectionResultRepository
 
         $ir->status = $param['status'];
         $ir->discarded = $param['discarded'];
+        $ir->m_keep = $param['m_keep'];
         $ir->ft_ids = serialize($ft_ids);
         $ir->modificated_choku = $param['modificated_choku'];
         $ir->modificated_by = $param['modificated_by'];
@@ -236,6 +239,8 @@ class InspectionResultRepository
 
         $ir->status = $param['status'];
         $ir->discarded = $param['discarded'];
+        $ir->f_keep = $param['f_keep'];
+        $ir->m_keep = $param['m_keep'];
         $ir->ft_ids = serialize($ft_ids);
         $ir->updated_choku = $param['updated_choku'];
         $ir->updated_by = $param['updated_by'];
@@ -282,11 +287,15 @@ class InspectionResultRepository
                 'f_keep',
                 'm_keep',
                 'discarded',
-                'inspected_choku as choku',
-                'inspected_by as worker',
+                'inspected_choku as fChoku',
+                'inspected_by as fWorker',
+                'modificated_choku as mChoku',
+                'modificated_by as mWorker',
+                'updated_by as uWorker',
                 'palet_num as paletNum',
                 'palet_max as paletMax',
-                'm_comment as comment',
+                'f_comment as fComment',
+                'm_comment as mComment',
                 'processed_at as processedAt',
                 'inspected_at as inspectedAt',
                 'modificated_at as modificatedAt',
@@ -342,7 +351,7 @@ class InspectionResultRepository
         $ir = InspectionResult::withFailures()
             ->withPart()
             ->where('f_keep', '=', 0)
-            ->where('m_keep', '=', 0)
+            // ->where('m_keep', '=', 0)
             ->where('discarded', '=', 0)
             ->where('line_code', '=', $line)
             ->where('inspected_at', '>=', $start)

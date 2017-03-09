@@ -124,6 +124,7 @@ class CreateResultTablesForPress extends Migration
             $table->string('line_code', 16);
             $table->string('vehicle_code', 16);
             $table->string('pt_pn', 10);
+            $table->tinyInteger('discarded')->unsigned()->default(0);
             $table->integer('figure_id')->unsigned()->nullable();
             $table->tinyInteger('keep')->unsigned()->default(0);
             $table->string('comment', 255)->nullable();

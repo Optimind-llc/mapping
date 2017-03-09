@@ -67,6 +67,12 @@ class PartTypeRepository
         $pt = PartType::with([
             'figures' => function($q) {
                 $q->where('status', '=', 1);
+            },
+            'leftPair' => function($q) {
+                $q->select(['id', 'left_pn', 'right_pn']);
+            },
+            'rightPair' => function($q) {
+                $q->select(['id', 'left_pn', 'right_pn']);
             }
         ])->find($pn);
 

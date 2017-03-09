@@ -57,7 +57,7 @@ class SearchMemo extends Component {
 
     searchMemo(
       line === null ? line : line.value,
-      vehicle === null ? line : vehicle.value,
+      vehicle === null ? vehicle : vehicle.value,
       part.value,
       startDate.format(format),
       endDate.format(format)
@@ -145,16 +145,19 @@ class SearchMemo extends Component {
         </div>
         <div className="result-wrap bg-white">
           {
-            !SearchMemo &&
-            <p>検索中...</p>
+            SearchMemo.isFetching &&
+            <p className="center-message">検索中...</p>
           }{
-            SearchMemo.data != null &&
+            SearchMemo.data != null &&SearchMemo.data.result_count > 0 &&
             <CustomTable
               count={SearchMemo.data.result_count}
               failureTypes={SearchMemo.data.failureTypes}
               result={SearchMemo.data.result}
               download={() => handleDownload(table)}
             />
+          }{
+            !SearchMemo.isFetching && SearchMemo.data != null &&SearchMemo.data.result_count === 0 &&
+            <p className="center-message">検索結果なし</p>
           }
         </div>
       </div>

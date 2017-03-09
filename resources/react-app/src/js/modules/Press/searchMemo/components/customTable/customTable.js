@@ -69,17 +69,17 @@ class CustomTable extends Component {
     const { sort } = this.state;
     const colWidth = {
       number: 36,
-      createdAt: 128,
       line: 50,
       vehicle: 44,
       pn: 100,
       capacity: 50,
       createdBy: 80,
+      createdAt: 128,
       failure: 88,
       comment: 78
     };
 
-    let tableWidth = colWidth.number + colWidth.vehicle + colWidth.pn + colWidth.name + colWidth.panelId + colWidth.choku + colWidth.inspectedBy + colWidth.updatedBy + colWidth.status + colWidth.comment + colWidth.inspectedAt + colWidth.updatedAt + 18;
+    let tableWidth = colWidth.number + colWidth.createdAt + colWidth.line + colWidth.vehicle + colWidth.pn + colWidth.capacity + colWidth.createdBy + colWidth.comment + 18;
     if (failureTypes.length > 0) {
       tableWidth = tableWidth + colWidth.failure*failureTypes.length;
     }

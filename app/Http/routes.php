@@ -27,7 +27,6 @@ Route::group(['prefix' => 'press', 'namespace' => 'Press'], function () {
         });
 
         Route::group(['prefix' => 'memo'], function () {
-            Route::get('list-old', 'MemoController@listOld');
             Route::get('list', 'MemoController@list');
             Route::post('initial', 'MemoController@initial');
             Route::post('save', 'MemoController@save');

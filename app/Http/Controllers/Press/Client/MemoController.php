@@ -56,50 +56,6 @@ class MemoController extends Controller
         $this->vehicle = $vehicle;
     }
 
-    public function listOld(Request $request)
-    {
-        $combinations = $this->combination->onlyActive()->toArray();
-
-        $result = [];
-        foreach ($combinations as $c) {
-            $keepingMemo = $this->memo->isKeeping($c['l'], $c['v'], $c['p']);
-
-            if ($keepingMemo !== null) {
-                $keepingMemoArray = $keepingMemo->toArray();
-
-                $figure = $keepingMemo['figure'];
-                $keepingMemoArray['figure'] = config('app.url').$figure['path'];
-
-                $keepingMemoArray['part'] = $keepingMemo['pt_pn'];
-                unset($keepingMemoArray['pt_pn']);
-
-                $keepingMemoArray['capacity'] = $keepingMemo['partType']['capacity'];
-
-                $keepingMemoArray['hasPair'] = false;
-                if ($keepingMemo['partType']['left_pair'] !== null || $keepingMemo['partType']['right_pair'] !== null) {
-                    $keepingMemoArray['hasPair'] = true;
-                }
-                unset($keepingMemoArray['part_type']);
-            }
-            else {
-                $keepingMemoArray = null;
-            }
-
-            $pt = $this->partType->findByPn($c['p']);
-
-            $result[] = [
-                'line' => $c['l'],
-                'vehicle' => $c['v'],
-                'part' => $c['p'],
-                'keepingMemo' => $keepingMemoArray,
-                'capacity' => $pt->capacity,
-                'figure' => config('app.url').$pt->figures->first()['path']
-            ];
-        }
-
-        return $result;
-    }
-
     public function list(Request $request)
     {
         $combinations = $this->combination->onlyActive()->toArray();
@@ -120,7 +76,7 @@ class MemoController extends Controller
                 $keepingMemoArray['capacity'] = $keepingMemo['partType']['capacity'];
 
                 $keepingMemoArray['hasPair'] = false;
-                if ($keepingMemo['partType']['left_pair'] !== null || $keepingMemo['partType']['right_pair'] !== null) {
+                if ($keepingMemoArray['part_type']['left_pair'] !== null || $keepingMemoArray['part_type']['right_pair'] !== null) {
                     $keepingMemoArray['hasPair'] = true;
                 }
                 unset($keepingMemoArray['part_type']);
@@ -131,13 +87,19 @@ class MemoController extends Controller
 
             $pt = $this->partType->findByPn($c['p']);
 
+            $hasPair = false;
+            if ($pt->leftPair !== null || $pt->rightPair !== null ) {
+                $hasPair = true;
+            }
+
             $result[] = [
                 'line' => $c['l'],
                 'vehicle' => $c['v'],
                 'part' => $c['p'],
                 'keepingMemo' => $keepingMemoArray,
                 'capacity' => $pt->capacity,
-                'figure' => config('app.url').$pt->figures->first()['path']
+                'figure' => config('app.url').$pt->figures->first()['path'],
+                'hasPair' => $hasPair
             ];
         }
 
@@ -158,6 +120,7 @@ class MemoController extends Controller
     public function save(Request $request)
     {
         $pt_pn = $request->part;
+        $discarded = $request->discarded;
         $figure = $this->figure->onlyActive($pt_pn);
 
         if (is_null($figure)) {
@@ -173,6 +136,7 @@ class MemoController extends Controller
             'line_code' => $request->line,
             'vehicle_code' => $request->vehicle,
             'pt_pn' => $pt_pn,
+            'discarded' => $discarded,
             'figure_id' => $figure_id,
             'keep' => $request->keep,
             'comment' => $request->comment,
@@ -215,7 +179,7 @@ class MemoController extends Controller
             unset($memoArray['pt_pn']);
 
             $memoArray['hasPair'] = false;
-            if ($memo['partType']['left_pair'] !== null || $memo['partType']['right_pair'] !== null) {
+            if ($memoArray['part_type']['left_pair'] !== null || $memoArray['part_type']['right_pair'] !== null) {
                 $memoArray['hasPair'] = true;
             }
             unset($memoArray['part_type']);
@@ -230,6 +194,7 @@ class MemoController extends Controller
     {
         $id = $request->id;
         $param = [
+            'discarded' => $request->discarded,
             'keep' => $request->keep,
             'comment' => $request->comment,
             'updated_choku' => $request->choku,

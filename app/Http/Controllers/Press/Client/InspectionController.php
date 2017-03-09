@@ -157,6 +157,11 @@ class InspectionController extends Controller
                 ], 400);
             }
 
+            $hasPair = $this->partType->hasPair($pt_pn);
+            if ($hasPair) {
+                $hasPair = true;
+            }
+
             $status = 0;
             $irArray = [
                 'line' => $line_code,
@@ -166,6 +171,7 @@ class InspectionController extends Controller
                 'paletNum' => $palet_num,
                 'paletMax' => $palet_max,
                 'figure' => config('app.url').$figure->path,
+                'hasPair' => $hasPair
             ];
         }
 
@@ -181,6 +187,7 @@ class InspectionController extends Controller
     {
         $QRcode = $request->QRcode;
         $iPadId = $request->iPadId;
+        $inspectedAt = $request->inspectedAt;
 
         $line_code = $this->line->getCodeByCodeInQR(substr($QRcode, 19, 3));
         $pt_pn = substr($QRcode, 26, 10);
@@ -226,7 +233,8 @@ class InspectionController extends Controller
             'ft_ids' => $this->failureType->activeIds(),
             'processed_at' => $processed_at,
             'control_num' => $controlNum,
-            'inspected_iPad_id' => $iPadId
+            'inspected_iPad_id' => $iPadId,
+            'inspected_at' => $inspectedAt
         ];
 
         $fs = [];
@@ -279,6 +287,7 @@ class InspectionController extends Controller
         $param = [
             'status' => $request->status,
             'discarded' => $request->discarded,
+            'm_keep' => $request->keep,
             'modificated_choku' => $request->choku,
             'modificated_by' => $request->worker,
             'm_comment' => $request->comment,
@@ -347,6 +356,8 @@ class InspectionController extends Controller
             'discarded' => $request->discarded,
             'updated_choku' => $request->choku,
             'updated_by' => $request->worker,
+            'f_keep' => $request->fKeep,
+            'm_keep' => $request->mKeep,
             'f_comment' => $request->commentInF,
             'm_comment' => $request->commentInM,
             'control_num' => $controlNum,
