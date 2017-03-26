@@ -20,6 +20,7 @@ class InspectionResultRepository
     {
         $this->now = Carbon::now();
         $this->failure = $failure;
+
     }
 
     protected function createFailures($ir_id, $figure_id, $fs)
@@ -70,9 +71,10 @@ class InspectionResultRepository
         return $this->failure->deleteByIds($dfs);
     }
 
-    public function hasControlNum()
+    public function hasControlNum($lines)
     {
         $ir = InspectionResult::whereNotNull('control_num')
+            ->whereIn('line_code', $lines)
             ->select([
                 'id',
                 'line_code as line',
@@ -88,6 +90,37 @@ class InspectionResultRepository
 
         return $ir;
     }
+
+    public function checkControlNum($line, $choku, $pt_pn, $controlNum)
+    {
+        if ($line === 'ATR18' || $line === '22A') {
+            $lines = ['ATR18', '22A'];
+        }
+        elseif ($line === '6A' || $line === '10B') {
+            $lines = ['6A', '10B'];
+        }
+        else {
+            $lines = [$line];
+        }
+
+        $irs = InspectionResult::whereIn('line_code', $lines)
+            ->where('inspected_choku', '=', $choku)
+            ->where('control_num', '=', $controlNum)
+            ->get(['id', 'line_code', 'pt_pn'])
+            ->filter(function($ir) use($line, $pt_pn) {
+                return $ir->line_code !== $line || $ir->pt_pn !== $pt_pn;
+            });
+
+        if ($irs->count() > 0) {
+            return [
+                'line' => $irs->first()->line_code,
+                'pn' => $irs->first()->pt_pn
+            ];
+        }
+
+        return false;
+    }
+    
 
     public function getResultByQRcode($QRcode)
     {
@@ -140,6 +173,7 @@ class InspectionResultRepository
         $new->processed_at = $param['processed_at'];
         $new->inspected_at = $param['inspected_at'];
         $new->control_num = $param['control_num'];
+        $new->re_print_sec = $param['re_print_sec'];
         $new->inspected_iPad_id = $param['inspected_iPad_id'];
         $new->created_at = $param['inspected_at'];
         $new->save();
@@ -212,6 +246,11 @@ class InspectionResultRepository
         $ir->m_comment = $param['m_comment'];
         $ir->modificated_iPad_id = $param['modificated_iPad_id'];
         $ir->modificated_at = $this->now;
+
+        if ($param['discarded'] === 1) {
+            $ir->control_num = null;
+        }
+
         $ir->save();
 
         // Create failures
@@ -309,11 +348,10 @@ class InspectionResultRepository
         return $ir;
     }
 
-    public function clearControlNum($id)
+    public function clearControlNum($ids)
     {
-        $ir = InspectionResult::find($id);
-        $ir->control_num = null;
-        $ir->save();
+        $irs = InspectionResult::whereIn('id', $ids)
+            ->update(['control_num' => null]);
 
         return true;
     }
@@ -363,16 +401,17 @@ class InspectionResultRepository
                 'line_code',
                 'vehicle_code',
                 'pt_pn',
+                'palet_num',
+                'processed_at',
                 'inspected_at',
                 'inspected_by',
-                'palet_num',
-                // 'palet_max',
                 'f_comment',
-                'processed_at',
-                'modificated_by',
                 'm_comment',
                 'modificated_at',
-                'ft_ids',
+                'modificated_by',
+                'picked_at',
+                'picked_by',
+                'ft_ids'
             ])
             ->orderBy('inspected_at')
             ->get();
@@ -384,7 +423,7 @@ class InspectionResultRepository
     {
         $ir = InspectionResult::withFailures()
             ->where('f_keep', '=', 0)
-            ->where('m_keep', '=', 0)
+            // ->where('m_keep', '=', 0)
             ->where('discarded', '=', 0)
             ->where('pt_pn', '=', $part)
             ->where('inspected_at', '>=', $start)
@@ -413,19 +452,18 @@ class InspectionResultRepository
         ->unique();
 
         $failures = $ir->map(function($ir){
-            return $ir->failures;
-        })
-        ->flatten()
-        ->map(function($f){
-            return [
-                'typeId' => $f->typeId,
-                'x' => $f->x1,
-                'y' => $f->y1,
-                'fQty' => $f->fQty,
-                'mQty' => $f->mQty,
-                'responsibleFor' => $f->responsibleFor
-            ];
-        });
+            return $ir->failures->map(function($f) use($ir) {
+                return [
+                    'c' => $ir->inspected_choku,
+                    'fQty' => $f->fQty,
+                    'mQty' => $f->mQty,
+                    'responsibleFor' => $f->responsibleFor,
+                    'typeId' => $f->typeId,
+                    'x' => $f->x1,
+                    'y' => $f->y1
+                ];
+            });
+        })->flatten(1);
 
         return [
             'ft_ids' => $ft_ids,
@@ -437,7 +475,7 @@ class InspectionResultRepository
     {
         $irs = InspectionResult::withFailures()
             ->where('f_keep', '=', 0)
-            ->where('m_keep', '=', 0)
+            // ->where('m_keep', '=', 0)
             ->where('discarded', '=', 0)
             ->where('pt_pn', '=', $part)
             ->where('inspected_at', '>=', $start)
@@ -445,9 +483,15 @@ class InspectionResultRepository
             ->whereIn('inspected_choku', $chokus);
 
         if (array_sum($judge) === 0) {
-            $irs = $irs->whereHas('failures', function($q) use($failureTypes) {
-                $q->whereIn('type_id', $failureTypes);
-            });
+            
+            if (count($failureTypes) > 0) {
+                $irs = $irs->whereHas('failures', function($q) use($failureTypes) {
+                    $q->whereIn('type_id', $failureTypes);
+                });
+            }
+            else {
+                $irs = $irs->has('failures');
+            }
         }
 
         if ($line !== null) {
@@ -474,7 +518,10 @@ class InspectionResultRepository
             'm_comment',
             'inspected_at',
             'modificated_at',
-            'ft_ids'
+            'ft_ids',
+            're_print_sec',
+            'picked_by',
+            'picked_at'
         ])
         ->take(100)
         ->get();
@@ -490,6 +537,11 @@ class InspectionResultRepository
             if ($ir->modificated_at !== null) {
                 $mAt = $ir->modificated_at->toDateTimeString();
             }
+            $pAt = '';
+            if ($ir->picked_at !== null) {
+                $pAt = $ir->picked_at->toDateTimeString();
+            }
+
             return [
                 'l' => $ir->line_code,
                 'v' => $ir->vehicle_code,
@@ -503,7 +555,9 @@ class InspectionResultRepository
                 'mCom' => $ir->m_comment,
                 'iAt' => $ir->inspected_at->toDateTimeString(),
                 'mAt' => $mAt,
-                'pNum' => $ir->palet_num,
+                'rps' => $ir->re_print_sec,
+                'pAt' => $ir->pAt,
+                'pBy' => mb_substr($ir->picked_by, 0, 4, 'UTF-8'),
                 'f' => $ir->failures->map(function($f) {
                     return [
                         't' => $f->typeId,
@@ -520,5 +574,32 @@ class InspectionResultRepository
             'ft_ids' => $ft_ids,
             'irs' => $irs
         ];
+    }
+
+
+    public function getTpsError($skip, $take)
+    {
+        $ir = InspectionResult::whereNotNull('tpsResponceStatus')
+            ->where('tpsResponceStatus', '!=', 0)
+            ->select([
+                'id',
+                'line_code as line',
+                'vehicle_code as vehicle',
+                'pt_pn as pn',
+                'tpsResponceStatus',
+                're_print_sec as rePrintSec',
+                'inspected_choku as fChoku',
+                'inspected_by as fWorker',
+                'palet_num as paletNum',
+                'palet_max as paletMax',
+                'processed_at as processedAt',
+                'inspected_at as inspectedAt'
+            ])
+            ->orderBy('inspected_at', 'desc')
+            ->skip($skip)
+            ->take($take)
+            ->get();
+
+        return $ir;
     }
 }

@@ -22,32 +22,40 @@ class CreateResultTablesForPress extends Migration
             $table->tinyInteger('status')->unsigned()->default(1);
             $table->tinyInteger('f_keep')->unsigned()->default(0);
             $table->tinyInteger('m_keep')->unsigned()->default(0);
-
             $table->tinyInteger('discarded')->unsigned()->default(0);
+
             $table->string('inspected_choku', 8);
             $table->string('modificated_choku', 8)->nullable();
             $table->string('updated_choku', 8)->nullable();
+
             $table->string('inspected_by', 8);
             $table->string('modificated_by', 8)->nullable();
             $table->string('updated_by', 8)->nullable();
+            $table->string('picked_by')->nullable();
+
             $table->integer('palet_num')->unsigned();
             $table->integer('palet_max')->unsigned();
-            $table->string('ft_ids', 512)->nullable();
-            $table->string('f_comment', 255)->nullable();
-            $table->string('m_comment', 255)->nullable();
+            $table->string('re_print_sec', 255)->nullable();
+            $table->integer('control_num')->nullable();
+
+            $table->string('inspected_iPad_id', 255);
+            $table->string('modificated_iPad_id', 255)->nullable();
+            $table->string('updated_iPad_id', 255)->nullable();
+
+            $table->string('tpsResponce', 255)->nullable();
+            $table->tinyInteger('tpsResponceStatus')->nullable();
+
             $table->timestamp('processed_at')->nullable();
             $table->timestamp('inspected_at');
             $table->timestamp('modificated_at')->nullable();
             $table->timestamp('picked_at')->nullable();
             $table->timestamp('exported_at')->nullable();
             $table->tinyInteger('latest')->unsigned()->default(1);
-            $table->integer('control_num')->nullable();
 
-            $table->string('inspected_iPad_id', 255);
-            $table->string('modificated_iPad_id', 255)->nullable();
-            $table->string('updated_iPad_id', 255)->nullable();
-            $table->string('tpsResponce', 255)->nullable();
-            $table->tinyInteger('tpsResponceStatus')->nullable();
+            $table->string('ft_ids', 512)->nullable();
+            $table->string('f_comment', 255)->nullable();
+            $table->string('m_comment', 255)->nullable();
+
             $table->timestamps();
 
             /*
@@ -76,11 +84,6 @@ class CreateResultTablesForPress extends Migration
                 ->on('figures')
                 ->onUpdate('cascade')
                 ->onDelete('set null');
-
-            /**
-             * Add Unique
-             */
-            $table->unique(['inspected_choku', 'control_num']);
         });
 
         Schema::connection('press')->create('failures', function (Blueprint $table) {

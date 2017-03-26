@@ -49,8 +49,11 @@ class SaveTpsResponce extends Command
         $irs = InspectionResult::whereNull('tpsResponceStatus')
             ->where('created_at', '>', $limit)
             ->where('discarded', '=', 0)
+            ->has('failures', '<', 1)
             ->select(['id', 'QRcode', 'inspected_iPad_id as iPadId'])
             ->get();
+
+        $this->info($irs->count());
 
         $tpsConnect = new TpsConnect;
         foreach ($irs as $ir) {

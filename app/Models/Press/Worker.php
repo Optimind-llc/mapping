@@ -21,6 +21,16 @@ class Worker extends Model
             ->select(['choku_code', 'name']);
     }
 
+    public function lines()
+    {
+        return $this->belongsToMany(
+            'App\Models\Press\Line',
+            'worker_related',
+            'worker_id',
+            'line_code'
+        )->withPivot('sort');
+    }
+
     // public function groups()
     // {
     //     return $this->belongsTo(
@@ -30,13 +40,5 @@ class Worker extends Model
     //     );
     // }
 
-    // public function inspectionGroup()
-    // {
-    //     return $this->belongsToMany(
-    //         'App\Models\InspectionGroup',
-    //         'inspector_inspection_group',
-    //         'inspector_id',
-    //         'inspection_g_id'
-    //     )->withPivot('sort');
-    // }
+
 }

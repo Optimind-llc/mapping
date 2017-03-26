@@ -64,8 +64,19 @@ class InspectionController extends Controller
 
     public function getControlNum(Request $request)
     {
+        $line = $request->line;
+        if ($line === 'ATR18' || $line === '22A') {
+            $lines = ['ATR18', '22A'];
+        }
+        elseif ($line === '6A' || $line === '10B') {
+            $lines = ['6A', '10B'];
+        }
+        else {
+            $lines = [$line];
+        }
+
         $irs = $this->inspectionResult
-            ->hasControlNum()
+            ->hasControlNum($lines)
             ->map(function($ir) {
                 $controlNum = $ir->controlNum;
 
@@ -188,9 +199,13 @@ class InspectionController extends Controller
         $QRcode = $request->QRcode;
         $iPadId = $request->iPadId;
         $inspectedAt = $request->inspectedAt;
+        if (!$inspectedAt) {
+            $inspectedAt = Carbon::now();
+        }
 
         $line_code = $this->line->getCodeByCodeInQR(substr($QRcode, 19, 3));
         $pt_pn = substr($QRcode, 26, 10);
+        $re_print_sec = substr($QRcode, 112, 6);
         $mold_type_num = trim(substr($QRcode, 22, 4));
         $combination = $this->combination->identifyVehicle($line_code, $pt_pn);
 
@@ -209,12 +224,32 @@ class InspectionController extends Controller
             $processed_at = Carbon::createFromFormat('YmdHis', $processed_at_string)->toDateTimeString(); 
         }
 
+
+
+        DB::connection('press')->beginTransaction();
+
         $controlNum = $request->controlNum;
         if ($controlNum === 0) {
             $controlNum = null;
         }
+        else {
+            $duplicated = $this->inspectionResult->checkControlNum(
+                $line_code,
+                $request->choku,
+                $pt_pn,
+                $controlNum
+            );
 
-        DB::connection('press')->beginTransaction();
+            if ($duplicated) {
+                DB::connection('press')->rollBack();
+
+                return \Response::json([
+                    'status' => 2,
+                    'message' => 'Control number was already used by '.$duplicated['line'].'-'.$duplicated['pn'].'-'.$request->choku.'-'.$controlNum,
+                ], 400);
+            }
+        }
+
         $param = [
             'QRcode' => $QRcode,
             'line_code' => $line_code,
@@ -233,6 +268,7 @@ class InspectionController extends Controller
             'ft_ids' => $this->failureType->activeIds(),
             'processed_at' => $processed_at,
             'control_num' => $controlNum,
+            're_print_sec' => $re_print_sec,
             'inspected_iPad_id' => $iPadId,
             'inspected_at' => $inspectedAt
         ];
@@ -244,7 +280,6 @@ class InspectionController extends Controller
 
         if ($this->inspectionResult->create($param, $fs)) {
             DB::connection('press')->commit();
-            // \Artisan::call('SaveTpsResponce');
 
             return \Response::json([
                 'message' => 'Save inspection succeeded',
@@ -396,13 +431,26 @@ class InspectionController extends Controller
 
     public function clearControlNum(Request $request)
     {
-        $inspectionId = $request->inspectionId;
-        $irs = $this->inspectionResult->clearControlNum($inspectionId);
+        $inspectionIds = $request->inspectionIds;
+        $irs = $this->inspectionResult->clearControlNum($inspectionIds);
 
         return [
             'message' => 'clear control number succeeded'
         ];
     }
+
+    public function getTpsError(Request $request)
+    {
+        $skip = $request->skip;
+        $take = $request->take;
+
+        $irs = $this->inspectionResult->getTpsError($skip, $take);
+        return $irs;
+    }
+
+
+
+
 
     public function delete(Request $request)
     {

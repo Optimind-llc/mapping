@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
         'App\Console\Commands\ExportCSV',
         'App\Console\Commands\SaveTpsResponce',
         'App\Console\Commands\CheckConfig',
-        // 'App\Console\Commands\Insert950ADummyData',
+        'App\Console\Commands\KanbanCsvImport'
     ];
 
     /**

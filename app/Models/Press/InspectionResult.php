@@ -13,7 +13,7 @@ class InspectionResult extends Model
 {
     protected $connection = 'press';
     protected $guarded = ['id'];
-    protected $dates = ['processed_at', 'inspected_at', 'modificated_at', 'exported_at'];
+    protected $dates = ['processed_at', 'inspected_at', 'modificated_at', 'picked_at', 'exported_at'];
 
     public function scopeNarrow($query, $start, $end, $by, $chokus)
     {

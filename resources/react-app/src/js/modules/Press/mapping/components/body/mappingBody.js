@@ -13,13 +13,14 @@ class MappingBody extends Component {
       fFilter: [],
       fFilterK: [],
       fFilterS: [],
-      fFilterZ: []
+      fFilterZ: [],
+      fFilterUK: []
     };
   }
 
   renderContent() {
     const { data } = this.props;
-    const { active, fFilter, fFilterK, fFilterS, fFilterZ } = this.state;
+    const { active, fFilter, fFilterK, fFilterS, fFilterZ, fFilterUK } = this.state;
 
     switch (active) {
       case 'f':
@@ -265,6 +266,64 @@ class MappingBody extends Component {
                   </div>
                 )
               }
+              <div className="has-check-box">
+                <ul>
+                  <li
+                    onClick={() => {
+                      let newFilterUK;
+                      if ( fFilterUK.length !== 0) newFilterUK = [];
+                      else newFilterUK = data.failureTypes.map(ft => ft.id);
+                      this.setState({ fFilterUK: newFilterUK });
+                    }}
+                  >
+                    <span><p>{fFilterUK.length === 0 && '✔'}︎</p></span>
+                    <span>責任不明</span>
+                  </li>
+                  {data.failureTypes.map(ft =>{
+                    const index = fFilterUK.indexOf(ft.id);
+                    return (
+                      <li
+                        key={ft.id}
+                        className={index === -1 ? 'active' : ''}
+                        onClick={() => {
+                          if ( index === -1) fFilterUK.push(ft.id);
+                          else fFilterUK.splice(index, 1);
+                          this.setState({ fFilterUK });
+                        }}
+                      >
+                        <span><p>{index === -1 && '✔'}︎</p></span>
+                        <span>{ft.name}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+              {
+                data.parts.map((p, i, self) =>
+                  <div className="not-has-check-box">
+                    <ul className="parts">
+                      <li>{self.length === 1 ? '' : i == 0 ? 'L' : 'R'}</li>
+                      {
+                        data.failureTypes.map(ft => 
+                          <li>
+                            {
+                              p.failures.filter(f =>
+                                f.responsibleFor == 99
+                              ).filter(f =>
+                                f.typeId == ft.id
+                              ).map(f =>
+                                f.mQty ? f.mQty: f.fQty
+                              ).reduce((prev, current, i, arr) => {
+                                return prev+current;
+                              }, 0)
+                            }
+                          </li>
+                        )
+                      }
+                    </ul>
+                  </div>
+                )
+              }
             </div>
           </div>
         )
@@ -277,25 +336,23 @@ class MappingBody extends Component {
 
   render() {
     const { data, isFetching, didInvalidate, narrowedBy } = this.props;
-    const { active, fFilter, fFilterK, fFilterS, fFilterZ } = this.state;
+    const { active, fFilter, fFilterK, fFilterS, fFilterZ, fFilterUK } = this.state;
 
     return (
       <div className="mapping-body-wrap">
         <div className="bg-white mapping-body">
-          {/*<div className="color-label">
-            <div>
-              <div className="circle-red"></div>
-              <p>白直</p>
+          {
+            <div className="color-label">
+              <div>
+                <div className="circle-red"></div>
+                <p>白直</p>
+              </div>
+              <div>
+                <div className="circle-yellow"></div>
+                <p>黄直</p>
+              </div>
             </div>
-            <div>
-              <div className="circle-yellow"></div>
-              <p>黄直</p>
-            </div>
-            <div>
-              <div className="circle-blue"></div>
-              <p>黒直</p>
-            </div>
-          </div>*/}
+          }
           <div className="figure-wrap">
             <div>
               {
@@ -316,15 +373,6 @@ class MappingBody extends Component {
                 )
               }
             </div>
-            {/*<div className="figure">
-              {
-                data.parts.length == 1 ?
-                <img width="846" height="520" src={data.parts[0].figure}/> :
-                data.parts.map(pt =>
-                  <img width="423" height="520" src={pt.figure}/>
-                )
-              }
-            </div>*/}
             <svg>
               {
                 active !== 'ato' &&
@@ -346,14 +394,21 @@ class MappingBody extends Component {
                       return fFilterZ.indexOf(f.typeId) == -1;
                     }
                     return true;
+                  }).filter(f => {
+                    if (f.responsibleFor === 99) {
+                      return fFilterUK.indexOf(f.typeId) == -1;
+                    }
+                    return true;
                   }).map(f => {
+                    const fill = f.c === 'Y' ? '#C6B700' : 'red';
+
                     return (
                       <g>
                         <circle
                           cx={f.x + 846/(self.length)*i}
                           cy={f.y}
                           r={5}
-                          fill="red"
+                          fill={fill}
                         />
                         <text
                           x={f.x + 846/(self.length)*i}
@@ -368,29 +423,6 @@ class MappingBody extends Component {
                         </text>
                       </g>
                     );
-                  // switch (f.c) {
-                  //   case '白直':
-                  //     return (
-                  //       <g>
-                  //         <circle cx={f.x} cy={f.y} r={5} fill="red" />
-                  //       </g>
-                  //     );
-                  //     break;
-                  //   case '黄直':
-                  //     return (
-                  //       <g>
-                  //         <circle cx={f.x} cy={f.y} r={5} fill="#C6B700" />
-                  //       </g>
-                  //     );
-                  //     break;
-                  //   case '黒直':
-                  //     return (
-                  //       <g>
-                  //         <circle cx={f.x} cy={f.y} r={5} fill="blue" />
-                  //       </g>
-                  //     );
-                  //     break;
-                  // }
                 }))
               }
             </svg>

@@ -85,7 +85,7 @@ class CustomTable extends Component {
       return [...pre, cur, cur];
     }, []);
 
-    let tableWidth = colWidth.number + colWidth.line + colWidth.vehicle + colWidth.pn + colWidth.paletNum + colWidth.choku + colWidth.By + colWidth.By + colWidth.status + colWidth.comment + colWidth.comment + colWidth.At + colWidth.At + colWidth.At + colWidth.At + 18;
+    let tableWidth = colWidth.number + colWidth.line + colWidth.vehicle + colWidth.pn + colWidth.paletNum + colWidth.choku + colWidth.By + colWidth.By + colWidth.status + colWidth.comment + colWidth.comment + colWidth.At + colWidth.At + colWidth.By + colWidth.At + colWidth.By + 18;
     if (failureTypes.length > 0) {
       tableWidth = tableWidth + colWidth.failure*failureTypes.length;
     }
@@ -175,8 +175,9 @@ class CustomTable extends Component {
               <th rowSpan="3" style={{width: colWidth.By}}>手直者</th>
               <th rowSpan="3" style={{width: colWidth.comment}}>手直者コメント</th>
               <th rowSpan="3" style={{width: colWidth.At}}>手直日時</th>
-              <th rowSpan="3" style={{width: colWidth.At}}>後工程引取日時</th>
-              <th rowSpan="3" style={{width: colWidth.At}}>引取順序</th>
+              <th rowSpan="3" style={{width: colWidth.By}}>再発行連番</th>
+              <th rowSpan="3" style={{width: colWidth.At}}>納入先引取時間</th>
+              <th rowSpan="3" style={{width: colWidth.By}}>納入先名称</th>
             </tr>
             <tr>
             {
@@ -237,8 +238,9 @@ class CustomTable extends Component {
                 <td style={{width: colWidth.By}}>{r.mBy}</td>
                 <td style={{width: colWidth.comment}}>{r.mCom ? r.mCom.slice(0,4)+'..' : ''}</td>
                 <td style={{width: colWidth.At}}>{r.mAt}</td>
-                <td style={{width: colWidth.At}}>-</td>
-                <td style={{width: colWidth.At}}>-</td>
+                <td style={{width: colWidth.By}}>{r.rps}</td>
+                <td style={{width: colWidth.At}}>{r.pAt}</td>
+                <td style={{width: colWidth.By}}>{r.pBy}</td>
               </tr>
             )
           }

@@ -39,7 +39,7 @@ class CreateBaseTablesForPress extends Migration
         Schema::connection('press')->create('part_types', function (Blueprint $table) {
             $table->string('pn', 10);
             $table->string('name', 32)->unique()->nullable();
-            $table->tinyInteger('capacity')->unsigned()->default(0);
+            $table->tinyInteger('capacity')->unsigned()->default(1);
             $table->string('en', 32)->unique()->nullable();
             $table->integer('sort')->unsigned()->default(1);
             $table->integer('status')->unsigned()->default(1);
@@ -155,6 +155,33 @@ class CreateBaseTablesForPress extends Migration
                 ->onDelete('restrict');
         });
 
+        Schema::connection('press')->create('worker_related', function (Blueprint $table) {
+            $table->integer('worker_id')->unsigned();
+            $table->string('line_code', 16);
+            $table->integer('sort')->unsigned()->default(1);
+            $table->timestamps();
+
+            /**
+             * Add Foreign
+             */
+            $table->foreign('worker_id')
+                ->references('id')
+                ->on('workers')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+
+            $table->foreign('line_code')
+                ->references('code')
+                ->on('lines')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+
+            /**
+             * Add Primary
+             */
+            $table->primary(['worker_id', 'line_code']);
+        });
+
 
         Schema::connection('press')->create('failure_types', function (Blueprint $table) {
             $table->increments('id');
@@ -173,6 +200,7 @@ class CreateBaseTablesForPress extends Migration
     public function down()
     {
         Schema::connection('press')->drop('failure_types');
+        Schema::connection('press')->drop('worker_related');
         Schema::connection('press')->drop('workers');
         Schema::connection('press')->drop('chokus');
         Schema::connection('press')->drop('combinations');

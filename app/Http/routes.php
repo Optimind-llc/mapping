@@ -7,9 +7,12 @@ Route::get('/', function () {
 // Press Client
 Route::group(['prefix' => 'press', 'namespace' => 'Press'], function () {
     Route::group(['prefix' => 'client', 'namespace' => 'Client'], function () {
+        // Get workers for inspection and memo
+        Route::post('worker', 'CommonController@worker');
+
         Route::group(['prefix' => 'inspection'], function () {
             Route::get('initial', 'InspectionController@initial');
-            Route::get('controlNum', 'InspectionController@getControlNum');
+            Route::post('controlNum', 'InspectionController@getControlNum');
             Route::post('check', 'InspectionController@check');
             Route::post('save/failure', 'InspectionController@saveForFailure');
 
@@ -19,6 +22,9 @@ Route::group(['prefix' => 'press', 'namespace' => 'Press'], function () {
 
             Route::post('update', 'InspectionController@update');
             Route::post('clear/controlNum', 'InspectionController@clearControlNum');
+
+            Route::post('tpsError', 'InspectionController@getTpsError');
+
 
 
             // Route::get('figure/{pn}', 'InspectionController@getFigure');

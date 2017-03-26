@@ -121,6 +121,9 @@ class MemoController extends Controller
     {
         $pt_pn = $request->part;
         $discarded = $request->discarded;
+        if (!$discarded) {
+            $discarded = 0;
+        }
         $figure = $this->figure->onlyActive($pt_pn);
 
         if (is_null($figure)) {
@@ -177,6 +180,8 @@ class MemoController extends Controller
     
             $memoArray['part'] = $memo['pt_pn'];
             unset($memoArray['pt_pn']);
+
+            $memoArray['capacity'] = $memoArray['part_type']['capacity'];
 
             $memoArray['hasPair'] = false;
             if ($memoArray['part_type']['left_pair'] !== null || $memoArray['part_type']['right_pair'] !== null) {

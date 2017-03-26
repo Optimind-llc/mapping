@@ -435,6 +435,103 @@ class RelatedWorkerTableSeeder extends Seeder
 
         DB::connection($connection)->table($table_name)->insert($data);
 
+        /*
+         * Create worker related table seeder
+         */
+        $table_name = 'worker_related';
+        DB::connection($connection)->table($table_name)->truncate();
+
+        $data = [
+            //ATR18_白
+            [
+                'line_code' => 'ATR18',
+                'worker_id' => 1,
+                'sort'      => 1
+            ],[
+                'line_code' => 'ATR18',
+                'worker_id' => 2,
+                'sort'      => 2
+            ],
+            //ATR18_黄
+            [
+                'line_code' => 'ATR18',
+                'worker_id' => 9,
+                'sort'      => 1
+            ],[
+                'line_code' => 'ATR18',
+                'worker_id' => 10,
+                'sort'      => 2
+            ],
+
+
+            //22A_白
+            [
+                'line_code' => '22A',
+                'worker_id' => 3,
+                'sort'      => 1
+            ],[
+                'line_code' => '22A',
+                'worker_id' => 4,
+                'sort'      => 2
+            ],
+            //22A_黄
+            [
+                'line_code' => '22A',
+                'worker_id' => 11,
+                'sort'      => 1
+            ],[
+                'line_code' => '22A',
+                'worker_id' => 12,
+                'sort'      => 2
+            ],
+
+
+            //10B_白
+            [
+                'line_code' => '10B',
+                'worker_id' => 5,
+                'sort'      => 1
+            ],[
+                'line_code' => '10B',
+                'worker_id' => 6,
+                'sort'      => 2
+            ],
+            //10B_黄
+            [
+                'line_code' => '10B',
+                'worker_id' => 13,
+                'sort'      => 1
+            ],[
+                'line_code' => '10B',
+                'worker_id' => 14,
+                'sort'      => 2
+            ],
+
+
+            //6A_白
+            [
+                'line_code' => '6A',
+                'worker_id' => 7,
+                'sort'      => 1
+            ],[
+                'line_code' => '6A',
+                'worker_id' => 8,
+                'sort'      => 2
+            ],
+            //6A_黄
+            [
+                'line_code' => '6A',
+                'worker_id' => 15,
+                'sort'      => 1
+            ],[
+                'line_code' => '6A',
+                'worker_id' => 16,
+                'sort'      => 2
+            ],
+        ];
+
+        DB::connection($connection)->table($table_name)->insert($data);
+
         DB::connection($connection)->statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

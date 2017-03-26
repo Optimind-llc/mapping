@@ -160,7 +160,7 @@ class Reference extends Component {
             <Select
               name="不良"
               className="failure-types"
-              placeholder={judgement.label === '×' ? '含める不良を選択' : '判定×を選択時有効'}
+              placeholder={judgement.label === '×' ? '絞り込む不良を選択' : '判定×を選択時有効'}
               clearable={false}
               Searchable={false}
               disabled={judgement.label !== '×'}
